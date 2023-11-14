@@ -1,0 +1,37 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+    <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+    <title>{% block title %}404 Not Found{% endblock %}</title>
+</head>
+
+<body class="d-flex flex-column h-100">
+    <div id="header">
+        {% block header %}
+        <div class="container">
+            <header class="d-flex justify-content-center py-3">
+              <ul class="nav nav-pills">
+                <li class="nav-item"><a href="#" class="nav-link active" aria-current="page">Home</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Features</a></li>
+                <li class="nav-item"><a href="/clubs" class="nav-link">Club Hub</a></li>
+                <li class="nav-item"><a href="/events" class="nav-link">Event Calendar</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">About</a></li>
+              </ul>
+            </header>
+        </div>
+        {% endblock %}
+    </div>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer mt-auto py-3 text-center bg-body-tertiary">
+        <div class="container">
+          <span class="text-body-secondary">&copy; Saurabh Saini, Sourabh Yadav, Swastik Kulshreshtha - 2023</span>
+        </div>
+    </footer>
+</body>
+</html>
