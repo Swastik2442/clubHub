@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en-us" class="h-100">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>University - Login</title>
+  {% load static %}
+  <link rel="shortcut icon" href="{% static 'jklu.png' %}">
+  <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+  <style>
+    body {
+        background: whitesmoke url("{% static 'jklu-bg.webp' %}") no-repeat fixed center;
+    }
+  </style>
+</head>
+
+<body class="h-100">
+  <div class="d-flex align-items-center justify-content-center h-100">
+    <form method="post" class="form row g-0 border rounded text-center bg-light p-3">
+      {% csrf_token %}
+      <h2 class="form-label">
+        <img src="{% static 'jklu.png' %}" class="" height="100" width="100" /><br>
+        Login
+      </h2>
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="inputUsername" name="username" placeholder="userxyz" required>
+        <label for="inputUsername">Username</label>
+      </div>
+      <div class="form-floating mb-3">
+        <input type="password" class="form-control" id="inputPassword" name="password" placeholder="Password" required>
+        <label for="inputPassword">Password</label>
+      </div>
+      <p class="form-label">
+        {% if error %}
+        <p>{{ error }}</p>
+        {% endif %}
+        <a href="{% url 'signupPage' %}" class="link-secondary">New User?</a><br>
+        <a href="#" class="link-secondary">Forgot your Password?</a>
+      </p>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+</body>
+
+</html>

@@ -1,7 +1,40 @@
 {% extends "base/home.html" %}
+{% load static %}
 
 {% block title %}Event Calendar{% endblock %}
+{% block scripts %}
+<script src="{% static 'bootstrap.min.js' %}"></script>
+<script src="{% static 'fullcalendar-6.1.9.min.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            themeSystem: 'bootstrap5',
+            headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+        },
+        initialDate: '{% now "Y-m-d" %}',
+        navLinks: true,
+        selectable: true,
+        // TODO: Add events through Django-Scheduler
+        events: [
+            {
+            title: 'Business Lunch',
+            start: '2023-11-03T13:00:00',
+            constraint: 'businessHours'
+            }
+        ]
+        });
+
+        calendar.render();
+    });
+</script>
+{% endblock %}
 
 {% block content %}
-Hello World! You're at Event Calendar Index.
+<div class="container">
+    <div id='calendar'></div>
+</div>
 {% endblock %}

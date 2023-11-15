@@ -1,37 +1,63 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="en" class="h-100">
+<html lang="en-us" class="h-100">
 <head>
-    <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
-    <title>{% block title %}404 Not Found{% endblock %}</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}404 Not Found{% endblock %}</title>
+  <link rel="shortcut icon" href="{% static 'jklu.png' %}">
+  {% block scripts %}{% endblock %}
+  <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+  <style>
+    .hoverUnderline {
+      position: relative;
+    }
+    .hoverUnderline:after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      transform: scaleX(0);
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      background-color: var(--bs-link-color);
+      transform-origin: bottom right;
+      transition: transform 0.25s ease-out;
+    }
+    .hoverUnderline:hover:after {
+      transform: scaleX(1);
+      transform-origin: bottom left;
+    }
+  </style>
 </head>
 
 <body class="d-flex flex-column h-100">
-    <div id="header">
-        {% block header %}
-        <div class="container">
-            <header class="d-flex justify-content-center py-3">
-              <ul class="nav nav-pills">
-                <li class="nav-item"><a href="#" class="nav-link active" aria-current="page">Home</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Features</a></li>
-                <li class="nav-item"><a href="/clubs" class="nav-link">Club Hub</a></li>
-                <li class="nav-item"><a href="/events" class="nav-link">Event Calendar</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">About</a></li>
-              </ul>
-            </header>
-        </div>
-        {% endblock %}
-    </div>
+  <div id="header">
+      {% block header %}
+      <div class="container bg-body-tertiary">
+          <header class="d-flex justify-content-center py-3">
+            <ul class="nav nav-pills">
+              <li class="nav-item"><a href="{% url 'baseIndex' %}" class="nav-link hoverUnderline" aria-current="page">Home</a></li>
+              <li class="nav-item"><a href="{% url 'baseIndex' %}#" class="nav-link hoverUnderline">Features</a></li>
+              <li class="nav-item"><a href="{% url 'clubIndex' %}" class="nav-link hoverUnderline">Club Hub</a></li>
+              <li class="nav-item"><a href="{% url 'eventIndex' %}" class="nav-link hoverUnderline">Event Calendar</a></li>
+              <li class="nav-item"><a href="{% url 'adminPage' %}" class="nav-link hoverUnderline">Admin Page</a></li>
+            </ul>
+          </header>
+      </div>
+      {% endblock %}
+  </div>
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+  <main>
+      {% block content %}{% endblock %}
+  </main>
 
-    <footer class="footer mt-auto py-3 text-center bg-body-tertiary">
-        <div class="container">
-          <span class="text-body-secondary">&copy; Saurabh Saini, Sourabh Yadav, Swastik Kulshreshtha - 2023</span>
-        </div>
-    </footer>
+  <footer class="footer mt-auto py-3 text-center bg-body-tertiary">
+      <div class="container">
+        <span class="text-body-secondary">&copy; Saurabh Saini, Sourabh Yadav, Swastik Kulshreshtha - 2023</span>
+      </div>
+  </footer>
 </body>
 </html>

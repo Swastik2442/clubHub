@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en-us" class="h-100">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>University - Sign Up</title>
+  {% load static %}
+  <link rel="shortcut icon" href="{% static 'jklu.png' %}">
+  <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+  <style>
+    body {
+        background: whitesmoke url("{% static 'jklu-bg.webp' %}") no-repeat fixed center;
+    }
+  </style>
+</head>
+
+<body class="h-100">
+  <div class="d-flex align-items-center justify-content-center h-100">
+    {% if submitted %}
+    <div class="g-0 border rounded text-center bg-light p-3">
+      {% if error %}
+      <h2>An Error Occured</h2>
+      <p>An error occured while validating your request. Please try again later.</p>
+      {% else %}
+      <h2>Thank You for Signing Up</h2>
+      <p>You will recieve an email in 24 hours regarding the Sign Up request.</p>
+      {% endif %}
+      <a href="{% url 'index' %}" role="button" class="btn btn-outline-secondary btn-lg px-4">Home</a>
+    </div>
+    {% else %}
+    <form method="post" class="form g-0 border rounded text-center bg-light p-3" style="width: 500px;">
+      {% csrf_token %}
+      <h2 class="form-label">
+        <img src="{% static 'jklu.png' %}" class="" height="100" width="100" /><br>
+        Sign Up
+      </h2>
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="inputName" name="name" placeholder="Enter your Name" required>
+        <label for="inputName">Name</label>
+      </div>
+      <div class="form-floating mb-3">
+        <input type="email" class="form-control" id="inputEmail" name="email" placeholder="Enter your JKLU Email Address" required>
+        <label for="inputEmail">Email Address</label>
+      </div>
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="inputUsername" name="username" placeholder="Enter your Username" required>
+        <label for="inputUsername">Username</label>
+      </div>
+      <div class="form-floating mb-3">
+        <input type="password" class="form-control" id="inputPassword1" name="password1" placeholder="Enter your Password" required>
+        <label for="inputPassword1">Password</label>
+      </div>
+      <div class="form-floating mb-3">
+        <input type="password" class="form-control" id="inputPassword2" name="password2" placeholder="Re-Enter your Password" required>
+        <label for="inputPassword2">Re-Enter Password</label>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    {% endif %}
+  </div>
+  <script>
+    var password = document.getElementById("inputPassword1"), confirm_password = document.getElementById("inputPassword2");
+    function validatePassword(){
+      if(password.value != confirm_password.value) {
+        confirm_password.setCustomValidity("Passwords Don't Match");
+      } else {
+        confirm_password.setCustomValidity('');
+      }
+    }
+    password.onchange = validatePassword;
+    confirm_password.onkeyup = validatePassword;
+  </script>
+</body>
+
+</html>
