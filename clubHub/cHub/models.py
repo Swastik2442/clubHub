@@ -33,6 +33,7 @@ class Club(models.Model):
     club_name = models.CharField(blank=False, max_length=50)
     topic = models.CharField(blank=False, max_length=50)
     faculty_mentor = models.CharField(max_length=50)
+    logo = models.URLField(blank=True)
 
     president_id = models.ForeignKey('Student', models.RESTRICT, blank=False, related_name='president')
     vice_president_id = models.ForeignKey('Student', models.RESTRICT, blank=False, related_name='vice_president')

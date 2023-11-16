@@ -1,0 +1,2 @@
+DJANGO_SECRET_KEY="your-key-here"
+SIGNUP_WEBHOOK="your-webhook-url-here"

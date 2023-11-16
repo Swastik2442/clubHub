@@ -1,0 +1,54 @@
+{% extends "base/home.html" %}
+
+{% block title %}Raw SQL - Admin{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <form method="post" class="row g-3">
+        {% csrf_token %}
+        <h5 class="">Enter your SQL Query-</h5>
+        <div class="form-floating">
+            <textarea class="form-control" id="sqlQuery" name="query" placeholder="SELECT * FROM cHub_Branch" rows="4"></textarea>
+            <label for="sqlQuery">SQL Query</label>
+            <div id="sqlHelp" class="form-text">
+                The Available Tables are-
+                <ul>
+                    <li>cHub_Branch</li>
+                    <li>cHub_Student</li>
+                    <li>cHub_Club</li>
+                    <li>eventCal_Event</li>
+                    <li>eventCal_EventSession</li>
+                    <li>eventCal_EventCoreTeam</li>
+                    <li>eventCal_SubEvent</li>
+                </ul>
+            </div>
+        </div>
+        {% if output %}
+        <button type="submit" class="btn btn-danger" disabled>Submit</button>
+        {% else %}
+        <button type="submit" class="btn btn-danger">Submit</button>
+        {% endif %}
+    </form><br>
+    {% if error %}
+    <h5 class="">Output-</h5>
+    <p style="font-family: Consolas, monaco, monospace;">{{ errorOutput }}</p>
+    {% else %}
+    {% if output %}
+    <h5 class="">Output-</h5>
+    <table class="table table-striped">
+        <tbody>
+            {% for row in output %}
+            <tr>
+                {% for i in row %}
+                <td>{{ i }}</td>
+                {% endfor %}
+            </tr>
+            {% empty %}
+            <br>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

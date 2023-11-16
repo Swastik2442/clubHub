@@ -7,9 +7,9 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}404 Not Found{% endblock %}</title>
-  <link rel="shortcut icon" href="{% static 'jklu.png' %}">
+  <link rel="shortcut icon" href="{% static 'img/jklu.png' %}">
   {% block scripts %}{% endblock %}
-  <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
   <style>
     .hoverUnderline {
       position: relative;
@@ -40,10 +40,12 @@
           <header class="d-flex justify-content-center py-3">
             <ul class="nav nav-pills">
               <li class="nav-item"><a href="{% url 'baseIndex' %}" class="nav-link hoverUnderline" aria-current="page">Home</a></li>
-              <li class="nav-item"><a href="{% url 'baseIndex' %}#" class="nav-link hoverUnderline">Features</a></li>
               <li class="nav-item"><a href="{% url 'clubIndex' %}" class="nav-link hoverUnderline">Club Hub</a></li>
               <li class="nav-item"><a href="{% url 'eventIndex' %}" class="nav-link hoverUnderline">Event Calendar</a></li>
               <li class="nav-item"><a href="{% url 'adminPage' %}" class="nav-link hoverUnderline">Admin Page</a></li>
+              {% if user.is_authenticated %}
+              <li class="nav-item"><a href="{% url 'logoutPage' %}?next={{ request.path|urlencode }}" class="nav-link hoverUnderline">Log Out</a></li>
+              {% endif %}
             </ul>
           </header>
       </div>
