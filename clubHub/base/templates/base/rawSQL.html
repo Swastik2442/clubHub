@@ -13,13 +13,11 @@
             <div id="sqlHelp" class="form-text">
                 The Available Tables are-
                 <ul>
-                    <li>cHub_Branch</li>
-                    <li>cHub_Student</li>
-                    <li>cHub_Club</li>
-                    <li>eventCal_Event</li>
-                    <li>eventCal_EventSession</li>
-                    <li>eventCal_EventCoreTeam</li>
-                    <li>eventCal_SubEvent</li>
+                {% for i in tables %}
+                    <li>{{ i }}</li>
+                {% empty %}
+                    <li>None</li>
+                {% endfor %}
                 </ul>
             </div>
         </div>

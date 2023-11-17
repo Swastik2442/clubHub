@@ -26,7 +26,7 @@ def login_view(request: HttpRequest):
             login(request, user)
             return redirect(request.GET.get("next", "baseIndex"))
         else:
-            return render(request, 'login.html', {'error': 'Invalid username or password'})
+            return render(request, 'base/login.html', {'error': 'Invalid username or password'})
     else:
         return render(request, 'base/login.html')
 
@@ -50,7 +50,7 @@ def signup_view(request: HttpRequest):
                 result.raise_for_status()
             except requests.exceptions.HTTPError as err:
                 logger.warning(err)
-                return render(request, 'signup.html', {'submitted': True, 'error': True})
+                return render(request, 'base/signup.html', {'submitted': True, 'error': True})
             else:
                 logger.info(f"Payload for new Sign-Up delivered with code {result.status_code}")
                 return render(request, 'base/signup.html', {'submitted': True, 'error': False})
@@ -68,36 +68,36 @@ def isAdminMember(user):
     """Checks if Logged In User is a Club Admin."""
     return user.groups.filter(name='clubAdmin').exists()
 
-options = {
-    1: ["Review Branches", "Check the Available Branches in the University"],
-    2: ["Review Students", "Check the Data of Students available in the Database"],
-    3: ["Review Clubs", "Check the Clubs available in the Database"],
-    4: ["Review Events", "Check the Events available in the Database"],
-    5: ["Raw SQL Queries", "Execute Raw SQL Queries in the Database"]
-}
-
 @user_passes_test(isAdminMember, login_url='/login')
 def admin_view(request: HttpRequest):
     """The Django View for the Club Admin Page."""
     return render(request, "base/admin.html", {"options": options})
+
+# TODO: Add Order By Query
+options = {
+    1: ["Review Branches", "Check the Available Branches in the University", Branch],
+    2: ["Review Students", "Check the Data of Students available in the Database", Student],
+    3: ["Review Clubs", "Check the Clubs available in the Database", Club],
+    4: ["Review Club Members", "Check the Members of Clubs available in the Database", ClubMember],
+    5: ["Review Events", "Check the Events available in the Database", Event],
+    6: ["Review Sessions", "Check the Event Sessions available in the Database", EventSession],
+    7: ["Review Core Teams", "Check the Core Teams' details available in the Database", EventCoreTeam],
+    8: ["Review Operations Teams", "Check the Operations Teams' details available in the Database", EventOperationsTeam],
+    9: ["Review Operations Teams' Members", "Check the Members of Operations Teams available in the Database", EventOperationMember],
+    10: ["Review Sub-Events", "Check the Sub-Events available in the Database", SubEvent],
+    11: ["Raw SQL Queries", "Execute Raw SQL Queries in the Database", None]
+}
 
 @user_passes_test(isAdminMember, login_url='/login')
 def adminOptions(request: HttpRequest, opt: int):
     """The Django View for Admin Options on the Club Admin Page."""
     option = options.get(opt, None)
     optionDetails = None
-    if (opt == 1):
-        optionDetails = Branch.objects.all()
-    elif (opt == 2):
-        optionDetails = Student.objects.all()
-    elif (opt == 3):
-        optionDetails = Club.objects.all()
-    elif (opt == 4):
-        optionDetails = Event.objects.all()
-    elif (opt == 5):
+    if (opt in range(1, 11)):
+        optionDetails = (option[2]).objects.all()
+    elif (opt == 11):
         return rawSQL_view(request)
-
-    if (optionDetails == None):
+    else:
         return redirect("adminPage")
 
     page = request.GET.get('page', 1)
@@ -108,12 +108,18 @@ def adminOptions(request: HttpRequest, opt: int):
         details = paginator.page(1)
     except EmptyPage:
         details = paginator.page(paginator.num_pages)
-    return render(request, 'base/reviewTable.html', {"option": option, "details": details})
+    return render(request, 'base/reviewTable.html', {"optionNo": opt, "option": option, "details": details})
+
+tables = [
+    "cHub_Branch", "cHub_Student", "cHub_Club", "cHub_ClubMember",
+    "eventCal_Event", "eventCal_EventSession", "eventCal_EventCoreTeam", "eventCal_EventOperationsTeam", "eventCal_EventOperationMembers", "eventCal_SubEvent"
+    ]
 
 @user_passes_test(isAdminMember, login_url='/login')
 def rawSQL_view(request: HttpRequest):
+    """The Django View for Processing Raw SQL on the Webpage.\nUse with Extreme Caution."""
     if (request.method == 'GET'):
-        return render(request, 'base/rawSQL.html', {'output': None, 'error': False, 'errorOutput': None})
+        return render(request, 'base/rawSQL.html', {'tables': tables, 'output': None, 'error': False, 'errorOutput': None})
     else:
         output = None
         error = False
@@ -125,6 +131,9 @@ def rawSQL_view(request: HttpRequest):
             except Exception as e:
                 error = True
                 errorOutput = str(e)
-        if (len(output) == 0 and not error):
-            output = [{'', ''}]
-        return render(request, 'base/rawSQL.html', {'output': output, 'error': error, 'errorOutput': errorOutput})
+        try:
+            if (len(output) == 0 and not error):
+                output = [{'', ''}]
+        except TypeError:
+            pass
+        return render(request, 'base/rawSQL.html', {'tables': tables, 'output': output, 'error': error, 'errorOutput': errorOutput})

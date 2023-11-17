@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
   <style>
     body {
-        background: whitesmoke url("{% static 'jklu-bg.webp' %}") no-repeat fixed center;
+        background: whitesmoke url("{% static 'img/jklu-bg.webp' %}") no-repeat fixed center;
     }
   </style>
 </head>
@@ -21,7 +21,7 @@
     <form method="post" class="form row g-0 border rounded text-center bg-light p-3">
       {% csrf_token %}
       <h2 class="form-label">
-        <img src="{% static 'jklu.png' %}" class="" height="100" width="100" /><br>
+        <img src="{% static 'img/jklu.png' %}" class="" height="100" width="100" /><br>
         Login
       </h2>
       <div class="form-floating mb-3">

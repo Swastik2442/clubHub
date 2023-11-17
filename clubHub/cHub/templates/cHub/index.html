@@ -5,26 +5,29 @@
 {% block content %}
 <div class="py-5">
     <div class="container">
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-    {% for club in clubs %}
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        {% for club in clubs %}
         <div class="col">
-            <div class="card shadow-sm">
-            <img class="bd-placeholder-img card-img-top" src="{{ club.logo }}" alt="{{ club.club_name }} Logo"/>
+          <div class="card shadow-sm">
+            <img class="card-img-top" src="{% if club.logo %}{{ club.logo }}{% else %}https://dummyimage.com/450x225&text=Image+not+Found{% endif %}" alt="{{ club.club_name }} Logo" width="100%" height="225" />
             <div class="card-body">
-                <p class="card-text">{{ club.club_name }}</p>
-                <div class="d-flex justify-content-between align-items-center">
+              <p class="card-text">{{ club.topic }} Club</p>
+              <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-outline-secondary">Expand</button>
+                  <a class="btn btn-sm btn-outline-secondary" href="{% url 'clubDetails' club.club_id %}" role="button">View</a>
+                  <a class="btn btn-sm btn-outline-secondary" href="{% url 'adminOptions' 11 %}" role="button">Edit</a>
                 </div>
-                <small class="text-body-secondary">{{ club.topic }}</small>
-                </div>
+                <small class="text-body-secondary">{{ club.club_year }}</small>
+              </div>
             </div>
-            </div>
+          </div>
         </div>
-    {% empty %}
-        Sorry, no clubs were found.
-    {% endfor %}
-        </div>
+        {% empty %}
+            Sorry, no clubs were found.
+        {% endfor %}
+      </div>
     </div>
-</div>
+  </div>
+    
+
 {% endblock %}

@@ -36,18 +36,29 @@
 <body class="d-flex flex-column h-100">
   <div id="header">
       {% block header %}
-      <div class="container bg-body-tertiary">
-          <header class="d-flex justify-content-center py-3">
-            <ul class="nav nav-pills">
-              <li class="nav-item"><a href="{% url 'baseIndex' %}" class="nav-link hoverUnderline" aria-current="page">Home</a></li>
-              <li class="nav-item"><a href="{% url 'clubIndex' %}" class="nav-link hoverUnderline">Club Hub</a></li>
-              <li class="nav-item"><a href="{% url 'eventIndex' %}" class="nav-link hoverUnderline">Event Calendar</a></li>
-              <li class="nav-item"><a href="{% url 'adminPage' %}" class="nav-link hoverUnderline">Admin Page</a></li>
-              {% if user.is_authenticated %}
-              <li class="nav-item"><a href="{% url 'logoutPage' %}?next={{ request.path|urlencode }}" class="nav-link hoverUnderline">Log Out</a></li>
-              {% endif %}
-            </ul>
-          </header>
+      <div class="px-5 bg-body-tertiary">
+        <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+          <div class="col-md-3 mb-2 mb-md-0">
+            <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
+              <img class="bi" src="{% static 'img/jklu.png' %}" alt="JKLU Logo" width="50" height="50" />
+            </a>
+          </div>
+    
+          <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+            <li><a href="{% url 'baseIndex' %}" class="nav-link hoverUnderline">Home</a></li>
+            <li><a href="{% url 'clubIndex' %}" class="nav-link hoverUnderline">Club Hub</a></li>
+            <li><a href="{% url 'eventIndex' %}" class="nav-link hoverUnderline">Event Calendar</a></li>
+            <li><a href="{% url 'adminPage' %}" class="nav-link hoverUnderline">Admin Page</a></li>
+          </ul>
+          <div class="col-md-3 text-end">
+            {% if user.is_authenticated %}
+            <a href="{% url 'logoutPage' %}?next={{ request.path|urlencode }}" class="btn btn-outline-secondary me-2">Log Out</a>
+            {% else %}
+            <a href="{% url 'loginPage' %}" class="btn btn-outline-primary me-2">Login</a>
+            <a href="{% url 'signupPage' %}" class="btn btn-primary">Sign Up</a>
+            {% endif %}
+          </div>
+        </header>
       </div>
       {% endblock %}
   </div>

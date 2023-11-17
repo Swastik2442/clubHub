@@ -1,7 +1,90 @@
 {% extends "base/home.html" %}
+{% load static %}
 
 {% block title %}{{ club.club_name }}{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<style>
+.marketing .col-lg-4 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+.marketing .col-lg-4 p {
+  margin-right: .75rem;
+  margin-left: .75rem;
+}
+.featurette-heading {
+  letter-spacing: -.05rem;
+}
+@media (min-width: 40em) {
+  .featurette-heading {
+    font-size: 50px;
+  }
+}
+@media (min-width: 62em) {
+  .featurette-heading {
+    margin-top: 7rem;
+  }
+}
+</style>
+{% endblock %}
 
 {% block content %}
-Hello World! This is the Page for {{ club.club_name }} Club.
+<div class="btn-group float-end p-3">
+    <button type="button" class="btn btn-secondary">Year</button>
+    <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+      <span class="visually-hidden">Toggle Dropdown</span>
+    </button>
+    <ul class="dropdown-menu">
+    {% for year in clubYears %}
+        <li><a class="dropdown-item" href="?year={{ year }}">{{ year }}</a></li>
+    {% endfor %}
+    </ul>
+</div>
+<div class="container marketing py-5">
+    <div class="row featurette py-3">
+        <div class="col-md-8 order-md-2">
+            <h2 class="featurette-heading fw-normal lh-1 text-body-secondary">
+                The <span class="text-body-emphasis">{{ club.topic }}</span> Club
+            </h2>
+            <p class="lead">Known as <strong>{{ club.club_name }}</strong></p>
+        </div>
+        <div class="col-md-4 order-md-1">
+            <img class="featurette-image img-fluid mx-auto" src="{% if club.logo %}{{ club.logo }}{% else %}https://dummyimage.com/300&text=Image+not+Found{% endif %}" alt="{{ club.club_name }} Logo" width="300" height="300"/>
+        </div>
+    </div>
+    <div class="row py-3">
+        <div class="col-lg-4">
+            <img class="rounded-circle" src="{% if club.president_picture %}{{ club.president_picture }}{% else %}https://dummyimage.com/140&text=Image+not+Found{% endif %}" alt="President Picture" width="140" height="140" />
+            <h2 class="fw-normal">President</h2>
+            <p>{{ clubHeads.0 }}</p>
+        </div>
+        <div class="col-lg-4">
+            <img class="rounded-circle" src="{% if club.vice_president_picture %}{{ club.vice_president_picture }}{% else %}https://dummyimage.com/140&text=Image+not+Found{% endif %}" alt="Vice-President Picture" width="140" height="140" />
+            <h2 class="fw-normal">Vice-President</h2>
+            <p>{{ clubHeads.1 }}</p>
+        </div>
+        <div class="col-lg-4">
+            <img class="rounded-circle" src="{% if club.faculty_mentor_picture %}{{ club.faculty_mentor_picture }}{% else %}https://dummyimage.com/140&text=Image+not+Found{% endif %}" alt="Faculty Picture" width="140" height="140" />
+            <h2 class="fw-normal">Faculty Mentor</h2>
+            <p>{{ club.faculty_mentor }}</p>
+        </div>
+    </div>
+    {% if clubMembers %}
+    <div class="px-md-5 py-3 mx-md-5">
+        <table class="table table-striped text-center">
+            <tr>
+                <th>Name</th>
+                <th>Role</th>
+            </tr>
+            {% for member in clubMembers %}
+            <tr>
+                <td>{{ member.0 }}</th>
+                <td>{{ member.1 }}</th>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}

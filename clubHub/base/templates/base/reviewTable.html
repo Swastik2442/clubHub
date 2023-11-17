@@ -9,18 +9,134 @@
 {% endblock %}
 
 {% block content %}
-  <div class="container infinite-container">
-    {% for detail in details %}
-      <div class="infinite-item">{{ detail }}</div>
-    {% endfor %}
-  </div>
+  <div class="container py-5">
+    <table class="table table-striped infinite-container">
+      <tr>
+      {% if optionNo is 1 %}
+        <th>Branch ID</th>
+        <th>Branch Name</th>
+      {% elif optionNo is 2 %}
+        <th>Batch</th>
+        <th>Branch</th>
+        <th>Roll No.</th>
+        <th>Name</th>
+      {% elif optionNo is 3 %}
+        <th>ID</th>
+        <th>Year</th>
+        <th>Topic</th>
+        <th>Name</th>
+        <th>Faculty Mentor</th>
+        <th>Logo</th>
+        <th>President</th>
+        <th>Vice-President</th>
+      {% elif optionNo is 4 %}
+        <th>Club</th>
+        <th>Member</th>
+        <th>Role</th>
+      {% elif optionNo is 5 %}
+        <th>Event ID</th>
+        <th>Starts</th>
+        <th>Ends</th>
+        <th>Logo</th>
+        <th>Location</th>
+        <th>Is Online?</th>
+        <th>Organizing Head</th>
+      {% elif optionNo is 6 %}
+        <th>Event</th>
+        <th>Session ID</th>
+        <th>Session Name</th>
+      {% elif optionNo is 7 %}
+        <th>Event</th>
+        <th>Member</th>
+      {% elif optionNo is 8 %}
+        <th>Event</th>
+        <th>Team ID</th>
+        <th>Team Name</th>
+        <th>Core Coordinator</th>
+      {% elif optionNo is 9 %}
+        <th>Operations Team</th>
+        <th>Member</th>
+        <th>Role</th>
+      {% elif optionNo is 10 %}
+        <th>Event</th>
+        <th>Sub-Event ID</th>
+        <th>Sub-Event Name</th>
+        <th>Logo</th>
+        <th>Location</th>
+        <th>Is Online?</th>
+        <th>Core Coordinator</th>
+        <th>Coordinator</th>
+      {% endif %}
+      </tr>
 
-  {% if details.has_next %}
+      {% for detail in details %}
+      <tr class="infinite-item">
+      {% if optionNo is 1 %}
+        <td>{{ detail.id }}</td>
+        <td>{{ detail.name }}</td>
+      {% elif optionNo is 2 %}
+        <td>{{ detail.batch_no }}</td>
+        <td>{{ detail.branch_id }}</td>
+        <td>{{ detail.roll_no }}</td>
+        <td>{{ detail.name }}</td>
+      {% elif optionNo is 3 %}
+        <td>{{ detail.club_id }}</td>
+        <td>{{ detail.club_year }}</td>
+        <td>{{ detail.club_name }}</td>
+        <td>{{ detail.topic }}</td>
+        <td>{{ detail.faculty_mentor }}</td>
+        <td>{{ detail.logo|truncatechars:10 }}...</td>
+        <td>{{ detail.president_id }}</td>
+        <td>{{ detail.vice_president_id }}</td>
+      {% elif optionNo is 4 %}
+        <td>{{ detail.club_id }}</td>
+        <td>{{ detail.member }}</td>
+        <td>{{ detail.role }}</td>
+      {% elif optionNo is 5 %}
+        <td>{{ detail.id }}</td>
+        <td>{{ detail.startDate }}</td>
+        <td>{{ detail.endDate }}</td>
+        <td>{{ detail.logo|truncatechars:10 }}...</td>
+        <td>{{ detail.location }}</td>
+        <td>{{ detail.isOnline }}</td>
+        <td>{{ detail.organizingHead }}</td>
+      {% elif optionNo is 6 %}
+        <td>{{ detail.eventID }}</td>
+        <td>{{ detail.sessionID }}</td>
+        <td>{{ detail.sessionName }}</td>
+      {% elif optionNo is 7 %}
+        <td>{{ detail.eventID }}</td>
+        <td>{{ detail.member }}</td>
+      {% elif optionNo is 8 %}
+        <td>{{ detail.eventID }}</td>
+        <td>{{ detail.teamID }}</td>
+        <td>{{ detail.name }}</td>
+        <td>{{ detail.member }}</td>
+      {% elif optionNo is 9 %}
+        <td>{{ detail.team }}</td>
+        <td>{{ detail.member }}</td>
+        <td>{{ detail.role }}</td>
+      {% elif optionNo is 10 %}
+        <td>{{ detail.eventID }}</td>
+        <td>{{ detail.subEventID }}</td>
+        <td>{{ detail.name }}</td>
+        <td>{{ detail.logo|truncatechars:10 }}...</td>
+        <td>{{ detail.location }}</td>
+        <td>{{ detail.isOnline }}</td>
+      {% endif %}
+      </tr>
+    {% empty %}
+    <p>No more details found!</p>
+    {% endfor %}
+    </table>
+
+    {% if details.has_next %}
     <a class="infinite-more-link" href="?page={{ details.next_page_number }}">More</a>
-  {% endif %}
-  
-  <div class="loading" style="display: none;">
+    {% endif %}
+    
+    <div class="loading" style="display: none;">
     Loading...
+    </div>
   </div>
 
   <script>
@@ -33,5 +149,5 @@
         $('.loading').hide();
       }
     });
-  </script>
+    </script>
 {% endblock %}
