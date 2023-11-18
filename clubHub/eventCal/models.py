@@ -1,15 +1,19 @@
 from django.db import models
 from cHub.models import Student
 
+RepetitionTypes = models.TextChoices("RepetitionTypes", "DAILY WEEKLY MONTHLY YEARLY NULL")
+
 class Event(models.Model):
     """A Django Model representing an Event."""
     id = models.CharField(primary_key=True, max_length=4)
+    name = models.CharField(max_length=30, blank=False)
     startDate = models.DateTimeField(blank=False)
-    endDate = models.DateTimeField(blank=True)
+    endDate = models.DateTimeField(blank=True, null=True)
     logo = models.URLField(blank=True)
     location = models.CharField(blank=True, max_length=50)
     isOnline = models.BooleanField(blank=False)
-    organizingHead = models.ForeignKey(Student, models.RESTRICT, blank=True)
+    organizingHead = models.ForeignKey(Student, models.RESTRICT, blank=True, null=True)
+    repetition = models.CharField(max_length=7, blank=False, default="NULL", choices=RepetitionTypes.choices)
 
     def __str__(self):
         return f"{self.id} - {self.startDate}"
@@ -19,6 +23,8 @@ class EventSession(models.Model):
     eventID = models.ForeignKey(Event, models.RESTRICT, blank=False)
     sessionID = models.CharField(max_length=4, blank=False)
     sessionName = models.CharField(max_length=20, blank=True)
+    startDate = models.DateTimeField(blank=False)
+    endDate = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         constraints = [
@@ -90,6 +96,8 @@ class SubEvent(models.Model):
     subEventID = models.CharField(max_length=4, blank=False)
     name = models.CharField(max_length=30, blank=True)
     logo = models.URLField(blank=True)
+    startDate = models.DateTimeField(blank=False)
+    endDate = models.DateTimeField(blank=True, null=True)
     location = models.CharField(max_length=50)
     isOnline = models.BooleanField(blank=False)
 

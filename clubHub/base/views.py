@@ -73,19 +73,18 @@ def admin_view(request: HttpRequest):
     """The Django View for the Club Admin Page."""
     return render(request, "base/admin.html", {"options": options})
 
-# TODO: Add Order By Query
 options = {
-    1: ["Review Branches", "Check the Available Branches in the University", Branch],
-    2: ["Review Students", "Check the Data of Students available in the Database", Student],
-    3: ["Review Clubs", "Check the Clubs available in the Database", Club],
-    4: ["Review Club Members", "Check the Members of Clubs available in the Database", ClubMember],
-    5: ["Review Events", "Check the Events available in the Database", Event],
-    6: ["Review Sessions", "Check the Event Sessions available in the Database", EventSession],
-    7: ["Review Core Teams", "Check the Core Teams' details available in the Database", EventCoreTeam],
-    8: ["Review Operations Teams", "Check the Operations Teams' details available in the Database", EventOperationsTeam],
-    9: ["Review Operations Teams' Members", "Check the Members of Operations Teams available in the Database", EventOperationMember],
-    10: ["Review Sub-Events", "Check the Sub-Events available in the Database", SubEvent],
-    11: ["Raw SQL Queries", "Execute Raw SQL Queries in the Database", None]
+    1: ["Review Branches", "Check the Available Branches in the University", Branch, ["id"]],
+    2: ["Review Students", "Check the Data of Students available in the Database", Student, ["batch_no", "branch_id", "roll_no"]],
+    3: ["Review Clubs", "Check the Clubs available in the Database", Club, ["-club_year", "club_id"]],
+    4: ["Review Club Members", "Check the Members of Clubs available in the Database", ClubMember, ["club_id", "role"]],
+    5: ["Review Events", "Check the Events available in the Database", Event, ["-startDate", "-endDate", "id"]],
+    6: ["Review Sessions", "Check the Event Sessions available in the Database", EventSession, ["eventID", "sessionID"]],
+    7: ["Review Core Teams", "Check the Core Teams' details available in the Database", EventCoreTeam, ["eventID"]],
+    8: ["Review Operations Teams", "Check the Operations Teams' details available in the Database", EventOperationsTeam, ["eventID", "teamID"]],
+    9: ["Review Operations Teams' Members", "Check the Members of Operations Teams available in the Database", EventOperationMember, ["team", "role"]],
+    10: ["Review Sub-Events", "Check the Sub-Events available in the Database", SubEvent, ["eventID", "-startDate", "-endDate", "subEventID"]],
+    11: ["Raw SQL Queries", "Execute Raw SQL Queries in the Database"]
 }
 
 @user_passes_test(isAdminMember, login_url='/login')
@@ -94,7 +93,7 @@ def adminOptions(request: HttpRequest, opt: int):
     option = options.get(opt, None)
     optionDetails = None
     if (opt in range(1, 11)):
-        optionDetails = (option[2]).objects.all()
+        optionDetails = (option[2]).objects.all().order_by(*option[3])
     elif (opt == 11):
         return rawSQL_view(request)
     else:

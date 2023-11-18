@@ -1,2 +1,6 @@
 DJANGO_SECRET_KEY="your-key-here"
 SIGNUP_WEBHOOK="your-webhook-url-here"
+CALENDAR_NAME="your-calendar-name-here"
+CALENDAR_DESCRIPTION="your-calendar-description-here"
+MIN_DATE="YYYY-MM-DD"
+MAX_DATE="YYYY-MM-DD"

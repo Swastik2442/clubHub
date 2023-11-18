@@ -1,7 +1,73 @@
 {% extends "base/home.html" %}
+{% load static %}
 
-{% block title %}Events Summary{% endblock %}
+{% block title %}All Events - Event Calendar{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
+<script src="{% static 'js/infinite.min.js' %}"></script>
+{% endblock %}
 
 {% block content %}
-Hello World! This is the Page for Event Summary.
+  <div class="container py-5 infinite-container">
+    <div>
+    {% for detail in details %}
+      <div class="card mb-3" style="max-width: 640px;">
+        <div class="row g-0">
+          <div class="col-md-4 d-flex align-items-center bg-body-secondary">
+            <img src="{% if detail.logo %}{{ detail.logo }}{% else %}https://dummyimage.com/480x480?text=Image+not+Found{% endif %}" class="img-fluid rounded-start" alt="{{ detail.name }} Logo">
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">{{ detail.name }} {{ detail.endDate|date:'Y' }}</h5>
+              <div class="card-text">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                  <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+                  <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
+                </svg>
+                {{ detail.startDate|date:'F m, Y' }}<br>
+                {% if detail.location %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                  <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
+                  <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                </svg>
+                {{ detail.location }}<br>
+                {% else %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-webcam" viewBox="0 0 16 16">
+                  <path d="M0 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H9.269c.144.162.33.324.531.475a6.785 6.785 0 0 0 .907.57l.014.006.003.002A.5.5 0 0 1 10.5 13h-5a.5.5 0 0 1-.224-.947l.003-.002.014-.007a4.473 4.473 0 0 0 .268-.148 6.75 6.75 0 0 0 .639-.421c.2-.15.387-.313.531-.475H2a2 2 0 0 1-2-2V6Zm2-1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H2Z"/>
+                  <path d="M8 6.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0Zm7 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0Z"/>
+                </svg>
+                Online
+                {% endif %}
+              </div>
+              <a href="{% url 'eventSummary' detail.id '0' %}" class="btn btn-secondary float-end my-3">View</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+    <p>No more events found!</p>
+    {% endfor %}
+    </div>
+
+    {% if details.has_next %}
+    <a class="infinite-more-link" href="?page={{ details.next_page_number }}">More</a>
+    {% endif %}
+    
+    <div class="loading" style="display: none;">
+    Loading...
+    </div>
+  </div>
+
+  <script>
+    var infinite = new Waypoint.Infinite({
+      element: $('.infinite-container')[0],
+      onBeforePageLoad: function () {
+        $('.loading').show();
+      },
+      onAfterPageLoad: function ($items) {
+        $('.loading').hide();
+      }
+    });
+    </script>
 {% endblock %}
