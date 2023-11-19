@@ -5,7 +5,6 @@ from . import views
 urlpatterns = [
     path("", views.index, name="eventIndex"),
     path("details/", views.allEvents, name="eventsDetails"),
-    path("event/<str:eventID>/<str:subEventID>/", views.eventSummary, name="eventSummary"),
-    path("event/<str:eventID>/<str:subEventID>/add/", views.adminAdd, name="eventAddPage"),
-    path("event/<str:eventID>/<str:subEventID>/edit/", views.adminEdit, name="eventEditPage"),
+    path("event/<str:eventID>/<str:subEventID>/<str:sessionID>/", views.eventSummary, name="eventSummary"),
+    path("event/<str:eventID>/<str:subEventID>/<str:sessionID>/add/", views.adminAdd, name="eventAddPage"),
 ]

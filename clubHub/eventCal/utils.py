@@ -1,6 +1,4 @@
-from schedule.models import Calendar, Event, Rule
-
-from datetime import datetime
+from schedule.models import Calendar, Rule
 
 def createCalendar(calendarName: str, calendarDescription: str):
     cal = Calendar(name=calendarDescription, slug=calendarName)

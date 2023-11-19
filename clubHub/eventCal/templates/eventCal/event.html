@@ -1,7 +1,165 @@
 {% extends "base/home.html" %}
+{% load static %}
 
-{% block title %}{{ event.name }} Event Details{% endblock %}
+{% block title %}
+{% if event.eventID %}{% if event.subEventID %}{{ event.name }}{% else %}{{ event.sessionName }}{% endif %} - {% endif %}{{ event.name }} Details
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+<style>
+.row-link:hover {
+    cursor: pointer;
+}
+</style>
+{% endblock %}
 
 {% block content %}
-Hello World! This is the Page for Event Summary.
+<div class="container col-xxl-8 px-4 py-3">
+    <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+        <div class="col-10 col-sm-8 col-lg-6">
+            <img src="{% if event.logo %}{{ event.logo }}{% else %}https://source.unsplash.com/random/1000x1000/?abstract{% endif %}" class="d-block mx-lg-auto img-fluid" alt="Event Logo" width="700" height="500" loading="lazy">
+        </div>
+        <div class="col-lg-6">
+            <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">{% if event.name %}{{ event.name }}{% else %}{{ event.sessionName }}{% endif %} {% if event.eventID %}- {{ event.eventID.name }}{% endif %} {{ event.endDate|date:'Y' }}</h1>
+            <p class="lead">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Qui sint excepturi sapiente est possimus aspernatur voluptate. Cumque adipisci voluptatum provident vitae et sint, ullam, nemo possimus, fugiat assumenda officia inventore ex nihil explicabo ratione debitis! Sit, distinctio. Animi, voluptatum eaque.</p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                <a class="btn btn-primary btn-lg px-4 me-md-2" role="button" href="#">Join</a>
+                {% if adminUser %}
+                <a class="btn btn-outline-secondary btn-lg px-4" role="button" href="
+                {% if event.eventID %}
+                {% if event.subEventID %}
+                {% url 'eventAddPage' event.eventID.id event.subEventID '0' %}
+                {% else %}
+                {% url 'eventAddPage' event.eventID.id '0' event.sessionID %}
+                {% endif %}
+                {% else %}
+                {% url 'eventAddPage' event.id '0' '0' %}
+                {% endif %}
+                ">Add to Calendar</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container text-center py-3">
+    <div class="row align-items-center">
+      <div class="col-md-4 p-3">
+        <h3>
+            {% now "r" as todays_date %}
+            {% if todays_date < event.startDate %}
+            Happening
+            {% else %}
+            Held
+            {% endif %}
+            {% if event.isOnline %}Online{% else %}{% if event.eventID.isOnline %}Online{% else %}at{% endif %}{% endif %}
+        </h3>
+        <p class="text-secondary-emphasis">{{ event.location }}</p>
+      </div>
+      <div class="{% if event.organizingHead %}col-md-4{% else %}col-md-8{% endif %} p-3">
+        <h3>Timings</h3>
+        <p>
+            {% if event.endDate %}Start: {% endif %}{{ event.startDate|date:'F d, Y h:i A' }}
+            {% if event.endDate %}
+            <br>End: {{ event.endDate|date:'F d, Y h:i A' }}
+            {% endif %}
+        </p>
+      </div>
+      {% if event.organizingHead %}
+      <div class="col-md-4 p-3">
+        <h3>Organizing Head</h3>
+        <p class="text-secondary-emphasis">{{ event.organizingHead.name }}</p>
+      </div>
+      {% endif %}
+    </div>
+</div>
+<div class="container py-3 text-center">
+    <h5>Share</h5>
+    <ul class="justify-content-center list-unstyled d-flex">
+        <li class="mx-2"><a class="text-body-secondary" href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode:'' }}{{ object.get_absolute_url|urlencode:'' }}">
+            <img src="{% static 'img/icons/facebook.svg' %}" alt="Facebook" width="24" height="24"/>
+        </a></li>
+        <li class="mx-2"><a class="text-body-secondary" href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri|urlencode:'' }}{{ object.get_absolute_url|urlencode:'' }}">
+            <img src="{% static 'img/icons/linkedin.svg' %}" alt="LinkedIn" width="24" height="24"/>
+        </a></li>
+        <li class="mx-2"><a class="text-body-secondary" href="https://t.me/share/url?url={{ request.build_absolute_uri|urlencode:'' }}{{ object.get_absolute_url|urlencode:'' }}">
+            <img src="{% static 'img/icons/telegram.svg' %}" alt="Telegram" width="24" height="24"/>
+        </a></li>
+        <li class="mx-2"><a class="text-body-secondary" href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri|urlencode:'' }}{{ object.get_absolute_url|urlencode:'' }}">
+            <img src="{% static 'img/icons/twitter.svg' %}" alt="Twitter" width="24" height="24"/>
+        </a></li>
+        <li class="mx-2"><a class="text-body-secondary" href="https://api.whatsapp.com/send?text={{ request.build_absolute_uri|urlencode:'' }}{{ object.get_absolute_url|urlencode:'' }}">
+            <img src="{% static 'img/icons/whatsapp.svg' %}" alt="WhatsApp" width="24" height="24"/>
+        </a></li>
+      </ul>
+</div>
+{% if subEvents %}
+<div class="container py-3">
+    <h3 class="text-center">Sub Events</h3><hr>
+    <table class="table table-light table-hover text-center">
+        <tr>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Core Coordinator</th>
+            <th>Coordinator</th>
+        </tr>
+        {% for subEvent in subEvents %}
+        <tr class="row-link" data-href="{% url 'eventSummary' subEvent.eventID.id subEvent.subEventID '0' %}">
+            <td>{{ subEvent.name }}</td>
+            <td>
+                {% if subEvent.isOnline %}
+                Online
+                {% else %}
+                {{ subEvent.location }}
+                {% endif %}
+            </td>
+            {% if subEvent.endDate %}
+            <td>{{ subEvent.startDate|date:'d N Y h:i A' }}</td>
+            <td>{{ subEvent.endDate|date:'d N Y h:i A' }}</td>
+            {% else %}
+            <td colspan="2">{{ subEvent.startDate|date:'d N Y h:i A' }} Onwards</td>
+            {% endif %}
+            {% if subEvent.coreCoordinator != subEvent.coordinator %}
+            <td>{{ subEvent.coreCoordinator.name }}</td>
+            <td>{{ subEvent.coordinator.name }}</td>
+            {% else %}
+            <td colspan="2"> </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table><hr>
+</div>
+{% endif %}
+{% if sessions %}
+<div class="container py-3">
+    <h3 class="text-center">Event Sessions</h3><hr>
+    <table class="table table-light table-hover text-center">
+        <tr>
+            <th>Name</th>
+            <th>Start</th>
+            <th>End</th>
+        </tr>
+        {% for i in sessions %}
+        <tr class="row-link" data-href="{% url 'eventSummary' i.eventID.id '0' i.sessionID %}">
+            <td>{{ i.sessionName }}</td>
+            </td>
+            {% if i.endDate %}
+            <td>{{ i.startDate|date:'d N Y h:i A' }}</td>
+            <td>{{ i.endDate|date:'d N Y h:i A' }}</td>
+            {% else %}
+            <td colspan="2">{{ i.startDate|date:'d N Y h:i A' }} Onwards</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table><hr>
+</div>
+{% endif %}
+<script>
+    jQuery(document).ready(function($) {
+        $(".row-link").click(function() {
+            window.location = $(this).data("href");
+        });
+    });
+</script>
 {% endblock %}

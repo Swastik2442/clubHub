@@ -26,7 +26,10 @@
 {% endblock %}
 
 {% block content %}
-<div class="container p-5">
-    <div id='calendar'></div>
+<div class="container px-5 py-3">
+    <div id='calendar' style="max-height: 100vh;"></div>
+    <div class="py-3 float-end">
+        <a class="btn btn-outline-primary" href="{% url 'eventsDetails' %}" role="button">Details of Events</a>
+    </div>
 </div>
 {% endblock %}
