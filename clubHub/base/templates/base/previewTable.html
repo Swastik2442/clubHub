@@ -1,7 +1,8 @@
-{% extends "base/home.html" %}
+{% extends "base/adminHome.html" %}
 {% load static %}
 
-{% block title %}{{ option.0 }} - Admin{% endblock %}
+{% block title %}Preview {{ option.0 }}{% endblock %}
+{% block dashTitle %}Preview {{ option.0 }}{% endblock %}
 {% block scripts %}
 <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
 <script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
@@ -9,42 +10,47 @@
 {% endblock %}
 
 {% block content %}
-  <div class="container py-5">
-    <table class="table table-striped infinite-container">
-      <tr>
+  <div class="container">
+    <table class="table table-striped w-auto border infinite-container">
+      <tr class="text-center">
       {% if optionNo is 1 %}
         <th>Branch ID</th>
         <th>Branch Name</th>
       {% elif optionNo is 2 %}
         <th>Batch</th>
-        <th>Branch</th>
+        <th>Branch Name</th>
         <th>Roll No.</th>
         <th>Name</th>
       {% elif optionNo is 3 %}
         <th>ID</th>
         <th>Year</th>
-        <th>Topic</th>
         <th>Name</th>
+        <th>Topic</th>
         <th>Faculty Mentor</th>
         <th>Logo</th>
         <th>President</th>
         <th>Vice-President</th>
+        <th>President Picture</th>
+        <th>Vice-President Picture</th>
       {% elif optionNo is 4 %}
         <th>Club</th>
         <th>Member</th>
         <th>Role</th>
       {% elif optionNo is 5 %}
-        <th>Event ID</th>
+        <th>ID</th>
+        <th>Name</th>
         <th>Starts</th>
         <th>Ends</th>
         <th>Logo</th>
         <th>Location</th>
         <th>Is Online?</th>
         <th>Organizing Head</th>
-      {% elif optionNo is 6 %}
+        {% elif optionNo is 6 %}
         <th>Event</th>
         <th>Session ID</th>
         <th>Session Name</th>
+        <th>Starts</th>
+        <th>Ends</th>
       {% elif optionNo is 7 %}
         <th>Event</th>
         <th>Member</th>
@@ -53,15 +59,14 @@
         <th>Team ID</th>
         <th>Team Name</th>
         <th>Core Coordinator</th>
+        <th>Related Club</th>
       {% elif optionNo is 9 %}
-        <th>Operations Team</th>
-        <th>Member</th>
-        <th>Role</th>
-      {% elif optionNo is 10 %}
         <th>Event</th>
         <th>Sub-Event ID</th>
         <th>Sub-Event Name</th>
         <th>Logo</th>
+        <th>Starts</th>
+        <th>Ends</th>
         <th>Location</th>
         <th>Is Online?</th>
         <th>Core Coordinator</th>
@@ -76,7 +81,7 @@
         <td>{{ detail.name }}</td>
       {% elif optionNo is 2 %}
         <td>{{ detail.batch_no }}</td>
-        <td>{{ detail.branch_id }}</td>
+        <td>{{ detail.branch_id.name }}</td>
         <td>{{ detail.roll_no }}</td>
         <td>{{ detail.name }}</td>
       {% elif optionNo is 3 %}
@@ -88,12 +93,15 @@
         <td>{{ detail.logo|truncatechars:10 }}...</td>
         <td>{{ detail.president_id }}</td>
         <td>{{ detail.vice_president_id }}</td>
+        <td>{{ detail.president_picture|truncatechars:10 }}..</td>
+        <td>{{ detail.vice_president_picture|truncatechars:10 }}..</td>
       {% elif optionNo is 4 %}
         <td>{{ detail.club_id }}</td>
         <td>{{ detail.member }}</td>
         <td>{{ detail.role }}</td>
       {% elif optionNo is 5 %}
         <td>{{ detail.id }}</td>
+        <td>{{ detail.name }}</td>
         <td>{{ detail.startDate }}</td>
         <td>{{ detail.endDate }}</td>
         <td>{{ detail.logo|truncatechars:10 }}...</td>
@@ -104,6 +112,8 @@
         <td>{{ detail.eventID }}</td>
         <td>{{ detail.sessionID }}</td>
         <td>{{ detail.sessionName }}</td>
+        <td>{{ detail.startDate }}</td>
+        <td>{{ detail.endDate }}</td>
       {% elif optionNo is 7 %}
         <td>{{ detail.eventID }}</td>
         <td>{{ detail.member }}</td>
@@ -111,18 +121,23 @@
         <td>{{ detail.eventID }}</td>
         <td>{{ detail.teamID }}</td>
         <td>{{ detail.name }}</td>
-        <td>{{ detail.member }}</td>
+        <td>{{ detail.coreCoordinator }}</td>
+        <td>{{ detail.relatedClub }}</td>
       {% elif optionNo is 9 %}
-        <td>{{ detail.team }}</td>
-        <td>{{ detail.member }}</td>
-        <td>{{ detail.role }}</td>
-      {% elif optionNo is 10 %}
         <td>{{ detail.eventID }}</td>
         <td>{{ detail.subEventID }}</td>
         <td>{{ detail.name }}</td>
         <td>{{ detail.logo|truncatechars:10 }}...</td>
+        <td>{{ detail.startDate }}</td>
+        <td>{{ detail.endDate }}</td>
         <td>{{ detail.location }}</td>
         <td>{{ detail.isOnline }}</td>
+        {% if detail.coreCoordinator != detail.coordinator %}
+        <td>{{ detail.coreCoordinator }}</td>
+        <td>{{ detail.coordinator }}</td>
+        {% else %}
+        <td colspan="2"></td>
+        {% endif %}
       {% endif %}
       </tr>
     {% empty %}

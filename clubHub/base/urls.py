@@ -7,6 +7,10 @@ urlpatterns = [
     path("login/", views.login_view, name="loginPage"),
     path("signup/", views.signup_view, name="signupPage"),
     path("logout/", views.logout_view, name="logoutPage"),
-    path("admin-page/", views.admin_view, name="adminPage"),
-    path("admin-page/options/<int:opt>/", views.adminOptions, name="adminOptions"),
+    path("dashboard/", views.adminDash, name="adminDash"),
+    path("dashboard/add/<int:opt>/", views.adminAdd, name="adminAdd"),
+    path("dashboard/edit/<int:opt>/", views.adminEdit, name="adminEdit"),
+    path("dashboard/delete/<int:opt>/", views.adminDelete, name="adminDelete"),
+    path("dashboard/preview/<int:opt>/", views.adminPreview, name="adminPreview"),
+    path("dashboard/executeSQL", views.rawSQL_view, name="adminRawSQL"),
 ]

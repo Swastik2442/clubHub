@@ -68,36 +68,69 @@ def isAdminMember(user):
     """Checks if Logged In User is a Club Admin."""
     return user.groups.filter(name='clubAdmin').exists()
 
-@user_passes_test(isAdminMember, login_url='/login')
-def admin_view(request: HttpRequest):
-    """The Django View for the Club Admin Page."""
-    return render(request, "base/admin.html", {"options": options})
+tables = [
+    "cHub_Branch", "cHub_Student", "cHub_Club", "cHub_ClubMember",
+    "eventCal_Event", "eventCal_EventSession", "eventCal_EventCoreTeam", "eventCal_EventOperationsTeam", "eventCal_SubEvent"
+    ]
 
 options = {
-    1: ["Review Branches", "Check the Available Branches in the University", Branch, ["id"]],
-    2: ["Review Students", "Check the Data of Students available in the Database", Student, ["batch_no", "branch_id", "roll_no"]],
-    3: ["Review Clubs", "Check the Clubs available in the Database", Club, ["-club_year", "club_id"]],
-    4: ["Review Club Members", "Check the Members of Clubs available in the Database", ClubMember, ["club_id", "role"]],
-    5: ["Review Events", "Check the Events available in the Database", Event, ["-startDate", "-endDate", "id"]],
-    6: ["Review Sessions", "Check the Event Sessions available in the Database", EventSession, ["eventID", "sessionID"]],
-    7: ["Review Core Teams", "Check the Core Teams' details available in the Database", EventCoreTeam, ["eventID"]],
-    8: ["Review Operations Teams", "Check the Operations Teams' details available in the Database", EventOperationsTeam, ["eventID", "teamID"]],
-    9: ["Review Operations Teams' Members", "Check the Members of Operations Teams available in the Database", EventOperationMember, ["team", "role"]],
-    10: ["Review Sub-Events", "Check the Sub-Events available in the Database", SubEvent, ["eventID", "-startDate", "-endDate", "subEventID"]],
-    11: ["Raw SQL Queries", "Execute Raw SQL Queries in the Database"]
+    1: ["Branches", Branch, ["id"]],
+    2: ["Students", Student, ["batch_no", "branch_id", "roll_no"]],
+    3: ["Clubs", Club, ["-club_year", "club_id"]],
+    4: ["Club Members", ClubMember, ["club_id", "role"]],
+    5: ["Events", Event, ["-startDate", "-endDate", "id"]],
+    6: ["Sessions", EventSession, ["eventID", "sessionID"]],
+    7: ["Core Teams", EventCoreTeam, ["eventID"]],
+    8: ["Operations Teams", EventOperationsTeam, ["eventID", "teamID"]],
+    9: ["Sub-Events", SubEvent, ["eventID", "-startDate", "-endDate", "subEventID"]]
 }
 
 @user_passes_test(isAdminMember, login_url='/login')
-def adminOptions(request: HttpRequest, opt: int):
-    """The Django View for Admin Options on the Club Admin Page."""
+def adminDash(request: HttpRequest):
+    """The Django View for the Admin Panel."""
+    return render(request, "base/adminDash.html", {'tables': tables})
+
+@user_passes_test(isAdminMember, login_url='/login')
+def adminAdd(request: HttpRequest, opt: int):
+    """The Django View for Adding Data in the Database."""
+    context = {"optionNo": opt, 'option': options[opt], 'tables': tables}
+    if request.method == 'POST':
+        if opt == 1:
+            print()
+    else:
+        if opt == 2:
+            branches = Branch.objects.all().order_by(*options[2][2])
+            context['branches'] = branches
+        if opt in range(3, 6) or opt in range(7, 10):
+            students = Student.objects.all().order_by(*options[2][2])
+            context['students'] = students
+        if opt == 4 or opt == 8:
+            clubs = Club.objects.all().order_by(*options[3][2])
+            context['clubs'] = clubs
+        if opt in range(6, 10):
+            events = Event.objects.all().order_by(*options[5][2])
+            context['events'] = events
+    return render(request, 'base/adminAdd.html', context)
+
+@user_passes_test(isAdminMember, login_url='/login')
+def adminEdit(request: HttpRequest, opt: int):
+    """The Django View for Editing Data in the Database."""
+    return render(request, 'base/adminEdit.html', {'tables': tables})
+
+@user_passes_test(isAdminMember, login_url='/login')
+def adminDelete(request: HttpRequest, opt: int):
+    """The Django View for Deleting Data in the Database."""
+    return render(request, 'base/adminDelete.html', {'tables': tables})
+
+@user_passes_test(isAdminMember, login_url='/login')
+def adminPreview(request: HttpRequest, opt: int):
+    """The Django View for Previewing Tables available in the Database."""
     option = options.get(opt, None)
     optionDetails = None
-    if (opt in range(1, 11)):
-        optionDetails = (option[2]).objects.all().order_by(*option[3])
-    elif (opt == 11):
-        return rawSQL_view(request)
+    if (opt in range(1, 10)):
+        optionDetails = (option[1]).objects.all().order_by(*option[2])
     else:
-        return redirect("adminPage")
+        return redirect("adminDash")
 
     page = request.GET.get('page', 1)
     paginator = Paginator(optionDetails, 10)
@@ -107,18 +140,13 @@ def adminOptions(request: HttpRequest, opt: int):
         details = paginator.page(1)
     except EmptyPage:
         details = paginator.page(paginator.num_pages)
-    return render(request, 'base/reviewTable.html', {"optionNo": opt, "option": option, "details": details})
-
-tables = [
-    "cHub_Branch", "cHub_Student", "cHub_Club", "cHub_ClubMember",
-    "eventCal_Event", "eventCal_EventSession", "eventCal_EventCoreTeam", "eventCal_EventOperationsTeam", "eventCal_EventOperationMembers", "eventCal_SubEvent"
-    ]
+    return render(request, 'base/previewTable.html', {"optionNo": opt, "option": option, "details": details, 'tables': tables})
 
 @user_passes_test(isAdminMember, login_url='/login')
 def rawSQL_view(request: HttpRequest):
     """The Django View for Processing Raw SQL on the Webpage.\nUse with Extreme Caution."""
     if (request.method == 'GET'):
-        return render(request, 'base/rawSQL.html', {'tables': tables, 'output': None, 'error': False, 'errorOutput': None})
+        return render(request, 'base/rawSQL.html', {'tables': tables, 'output': None, 'error': False, 'errorOutput': None, 'tables': tables})
     else:
         output = None
         error = False
@@ -135,4 +163,4 @@ def rawSQL_view(request: HttpRequest):
                 output = [{'', ''}]
         except TypeError:
             pass
-        return render(request, 'base/rawSQL.html', {'tables': tables, 'output': output, 'error': error, 'errorOutput': errorOutput})
+        return render(request, 'base/rawSQL.html', {'tables': tables, 'output': output, 'error': error, 'errorOutput': errorOutput, 'tables': tables})

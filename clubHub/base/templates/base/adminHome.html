@@ -1,0 +1,239 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}404 Not Found{% endblock %}</title>
+  <link rel="shortcut icon" href="{% static 'img/jklu.png' %}">
+  {% block scripts %}{% endblock %}
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+  <style>
+    .hoverUnderline {
+      position: relative;
+    }
+    .hoverUnderline:after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      transform: scaleX(0);
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      background-color: var(--bs-link-color);
+      transform-origin: bottom right;
+      transition: transform 0.25s ease-out;
+    }
+    .hoverUnderline:hover:after {
+      transform: scaleX(1);
+      transform-origin: bottom left;
+    }
+    .bi {
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+    }
+    @media (min-width: 768px) {
+        .sidebar .offcanvas-lg {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 48px;
+        }
+        .navbar-search {
+        display: block;
+        }
+    }
+    .sidebar .nav-link {
+        font-size: .875rem;
+        font-weight: 500;
+    }
+    .sidebar .nav-link.active {
+        color: #2470dc;
+    }
+    .sidebar-heading {
+        font-size: .75rem;
+    }
+    .navbar-brand {
+        padding-top: .75rem;
+        padding-bottom: .75rem;
+        background-color: rgba(0, 0, 0, .25);
+        box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+    }
+    .navbar .form-control {
+        padding: .75rem 1rem;
+    }
+    .hide-scroll {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .hide-scroll::-webkit-scrollbar {
+        display: none;
+    }
+  </style>
+</head>
+
+<body>
+    <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+      <symbol id="house-fill" viewBox="0 0 16 16">
+        <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"></path>
+        <path d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z"></path>
+      </symbol>
+        <symbol id="file-earmark" viewBox="0 0 16 16">
+          <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"></path>
+        </symbol>
+        <symbol id="edit" viewBox="0 0 16 16">
+          <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+          <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+        </symbol>
+        <symbol id="trash" viewBox="0 0 16 16">
+          <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+          <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+        </symbol>
+        <symbol id="puzzle" viewBox="0 0 16 16">
+          <path d="M3.112 3.645A1.5 1.5 0 0 1 4.605 2H7a.5.5 0 0 1 .5.5v.382c0 .696-.497 1.182-.872 1.469a.459.459 0 0 0-.115.118.113.113 0 0 0-.012.025L6.5 4.5v.003l.003.01c.004.01.014.028.036.053a.86.86 0 0 0 .27.194C7.09 4.9 7.51 5 8 5c.492 0 .912-.1 1.19-.24a.86.86 0 0 0 .271-.194.213.213 0 0 0 .039-.063v-.009a.112.112 0 0 0-.012-.025.459.459 0 0 0-.115-.118c-.375-.287-.872-.773-.872-1.469V2.5A.5.5 0 0 1 9 2h2.395a1.5 1.5 0 0 1 1.493 1.645L12.645 6.5h.237c.195 0 .42-.147.675-.48.21-.274.528-.52.943-.52.568 0 .947.447 1.154.862C15.877 6.807 16 7.387 16 8s-.123 1.193-.346 1.638c-.207.415-.586.862-1.154.862-.415 0-.733-.246-.943-.52-.255-.333-.48-.48-.675-.48h-.237l.243 2.855A1.5 1.5 0 0 1 11.395 14H9a.5.5 0 0 1-.5-.5v-.382c0-.696.497-1.182.872-1.469a.459.459 0 0 0 .115-.118.113.113 0 0 0 .012-.025L9.5 11.5v-.003a.214.214 0 0 0-.039-.064.859.859 0 0 0-.27-.193C8.91 11.1 8.49 11 8 11c-.491 0-.912.1-1.19.24a.859.859 0 0 0-.271.194.214.214 0 0 0-.039.063v.003l.001.006a.113.113 0 0 0 .012.025c.016.027.05.068.115.118.375.287.872.773.872 1.469v.382a.5.5 0 0 1-.5.5H4.605a1.5 1.5 0 0 1-1.493-1.645L3.356 9.5h-.238c-.195 0-.42.147-.675.48-.21.274-.528.52-.943.52-.568 0-.947-.447-1.154-.862C.123 9.193 0 8.613 0 8s.123-1.193.346-1.638C.553 5.947.932 5.5 1.5 5.5c.415 0 .733.246.943.52.255.333.48.48.675.48h.238l-.244-2.855zM4.605 3a.5.5 0 0 0-.498.55l.001.007.29 3.4A.5.5 0 0 1 3.9 7.5h-.782c-.696 0-1.182-.497-1.469-.872a.459.459 0 0 0-.118-.115.112.112 0 0 0-.025-.012L1.5 6.5h-.003a.213.213 0 0 0-.064.039.86.86 0 0 0-.193.27C1.1 7.09 1 7.51 1 8c0 .491.1.912.24 1.19.07.14.14.225.194.271a.213.213 0 0 0 .063.039H1.5l.006-.001a.112.112 0 0 0 .025-.012.459.459 0 0 0 .118-.115c.287-.375.773-.872 1.469-.872H3.9a.5.5 0 0 1 .498.542l-.29 3.408a.5.5 0 0 0 .497.55h1.878c-.048-.166-.195-.352-.463-.557-.274-.21-.52-.528-.52-.943 0-.568.447-.947.862-1.154C6.807 10.123 7.387 10 8 10s1.193.123 1.638.346c.415.207.862.586.862 1.154 0 .415-.246.733-.52.943-.268.205-.415.39-.463.557h1.878a.5.5 0 0 0 .498-.55l-.001-.007-.29-3.4A.5.5 0 0 1 12.1 8.5h.782c.696 0 1.182.497 1.469.872.05.065.091.099.118.115.013.008.021.01.025.012a.02.02 0 0 0 .006.001h.003a.214.214 0 0 0 .064-.039.86.86 0 0 0 .193-.27c.14-.28.24-.7.24-1.191 0-.492-.1-.912-.24-1.19a.86.86 0 0 0-.194-.271.215.215 0 0 0-.063-.039H14.5l-.006.001a.113.113 0 0 0-.025.012.459.459 0 0 0-.118.115c-.287.375-.773.872-1.469.872H12.1a.5.5 0 0 1-.498-.543l.29-3.407a.5.5 0 0 0-.497-.55H9.517c.048.166.195.352.463.557.274.21.52.528.52.943 0 .568-.447.947-.862 1.154C9.193 5.877 8.613 6 8 6s-1.193-.123-1.638-.346C5.947 5.447 5.5 5.068 5.5 4.5c0-.415.246-.733.52-.943.268-.205.415-.39.463-.557H4.605z"></path>
+        </symbol>
+        <symbol id="plus-circle" viewBox="0 0 16 16">
+          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"></path>
+        </symbol>
+        <symbol id="file-earmark-text" viewBox="0 0 16 16">
+          <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z"></path>
+          <path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"></path>
+        </symbol>
+    </svg>
+
+    <div class="px-5 bg-dark">
+    <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-4">
+        <div class="col-md-3 mb-2 mb-md-0">
+        <a onclick="window.location.reload();" class="d-inline-flex link-body-emphasis text-decoration-none">
+            <img class="bg-light p-1 rounded-1" src="{% static 'img/jklu.png' %}" alt="JKLU Logo" width="30" height="30" />
+        </a>
+        </div>
+
+        <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+        <li><a href="{% url 'baseIndex' %}" class="nav-link hoverUnderline">Project Home</a></li>
+        </ul>
+        <div class="col-md-3 text-end">
+        {% if user.is_authenticated %}
+        <a href="{% url 'logoutPage' %}?next={{ request.path|urlencode }}" class="btn btn-outline-light me-2">Log Out</a>
+        {% else %}
+        <a href="{% url 'loginPage' %}" class="btn btn-outline-primary me-2">Login</a>
+        <a href="{% url 'signupPage' %}" class="btn btn-primary">Sign Up</a>
+        {% endif %}
+        </div>
+    </header>
+    </div>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="sidebar border col-md-3 col-lg-2 p-0 bg-body-tertiary">
+      <div class="offcanvas-md offcanvas-end bg-body-tertiary" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+        <div class="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto hide-scroll">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center gap-2 active" aria-current="page" href="{% url 'adminDash' %}">
+                <svg class="bi"><use xlink:href="#house-fill"></use></svg>
+                Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center gap-2" data-bs-toggle="collapse" href="#addCollapse" role="button" aria-expanded="false" aria-controls="addCollapse">
+                <svg class="bi"><use xlink:href="#file-earmark"></use></svg>
+                Add Data
+              </a>
+            </li>
+            <div class="collapse" id="addCollapse">
+              {% for i in tables %}
+              <li class="nav-item">
+                <a class="nav-link d-flex align-items-center gap-2 link-body-emphasis text-black-50" href="{% url 'adminAdd' forloop.counter %}">
+                  <svg class="bi"><use xlink:href="#file"></use></svg>
+                  {{ i }}
+                </a>
+              </li>
+              {% endfor %}
+            </div>
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center gap-2" data-bs-toggle="collapse" href="#editCollapse" role="button" aria-expanded="false" aria-controls="editCollapse">
+                <svg class="bi"><use xlink:href="#edit"></use></svg>
+                Edit Data
+              </a>
+            </li>
+            <div class="collapse" id="editCollapse">
+              {% for i in tables %}
+              <li class="nav-item">
+                <a class="nav-link d-flex align-items-center gap-2 link-body-emphasis text-black-50" href="{% url 'adminEdit' forloop.counter %}">
+                  <svg class="bi"><use xlink:href="#file"></use></svg>
+                  {{ i }}
+                </a>
+              </li>
+              {% endfor %}
+            </div>
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center gap-2" data-bs-toggle="collapse" href="#deleteCollapse" role="button" aria-expanded="false" aria-controls="deleteCollapse">
+                <svg class="bi"><use xlink:href="#trash"></use></svg>
+                Delete Data
+              </a>
+            </li>
+            <div class="collapse" id="deleteCollapse">
+              {% for i in tables %}
+              <li class="nav-item">
+                <a class="nav-link d-flex align-items-center gap-2 link-body-emphasis text-black-50" href="{% url 'adminDelete' forloop.counter %}">
+                  <svg class="bi"><use xlink:href="#file"></use></svg>
+                  {{ i }}
+                </a>
+              </li>
+              {% endfor %}
+            </div>
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center gap-2" href="{% url 'adminRawSQL' %}">
+                <svg class="bi"><use xlink:href="#puzzle"></use></svg>
+                Execute Raw SQL
+              </a>
+            </li>
+          </ul>
+
+          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
+            <span>Preview Tables</span>
+            <a class="link-secondary" href="{% url 'adminRawSQL' %}" aria-label="Add a New Table">
+              <svg class="bi"><use xlink:href="#plus-circle"></use></svg>
+            </a>
+          </h6>
+          <ul class="nav flex-column mb-auto">
+            {% for i in tables %}
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center gap-2" href="{% url 'adminPreview' forloop.counter %}">
+                <svg class="bi"><use xlink:href="#file-earmark-text"></use></svg>
+                {{ i }}
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">{% block dashTitle %}Dashboard{% endblock %}</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="btn-group me-2">
+            <a role="button" class="btn btn-sm btn-outline-secondary" href="{% url 'clubIndex' %}">Club Hub</a>
+            <a role="button" class="btn btn-sm btn-outline-secondary" href="{% url 'eventIndex' %}">Event Calendar</a>
+          </div>
+        </div>
+      </div>
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+
+<footer class="footer py-3 text-center bg-body-tertiary">
+    <div class="container">
+      <span class="text-body-secondary">&copy; Saurabh Saini, Sourabh Yadav, Swastik Kulshreshtha - 2023</span>
+    </div>
+</footer>
+</body>
+</html>

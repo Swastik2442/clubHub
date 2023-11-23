@@ -27,7 +27,7 @@ class Student(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.name} ({self.batch_no}{self.branch_id}{str(self.roll_no).zfill(3)})"
+        return f"{self.name} ({self.batch_no} {self.branch_id.name} {str(self.roll_no).zfill(3)})"
     
 class Club(models.Model):
     """A Django Model representing a Club."""

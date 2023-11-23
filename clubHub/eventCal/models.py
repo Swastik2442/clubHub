@@ -1,5 +1,5 @@
 from django.db import models
-from cHub.models import Student
+from cHub.models import Student, Club
 
 RepetitionTypes = models.TextChoices("RepetitionTypes", "DAILY WEEKLY MONTHLY YEARLY NULL")
 
@@ -16,7 +16,7 @@ class Event(models.Model):
     repetition = models.CharField(max_length=7, blank=False, default="NULL", choices=RepetitionTypes.choices)
 
     def __str__(self):
-        return f"{self.id} - {self.startDate}"
+        return f"{self.name} ({self.startDate.year})"
 
 class EventSession(models.Model):
     """A Django Model representing the Sessions of Events."""
@@ -35,7 +35,7 @@ class EventSession(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.eventID}:{self.sessionID}"
+        return f"{self.sessionName} ({self.eventID})"
 
 class EventCoreTeam(models.Model):
     """A Django Model representing the Core Team Members of an Event (if any)."""
@@ -59,6 +59,7 @@ class EventOperationsTeam(models.Model):
     teamID = models.CharField(max_length=4, blank=False)
     name = models.CharField(max_length=20, blank=False)
     coreCoordinator = models.ForeignKey(Student, models.RESTRICT)
+    relatedClub = models.ForeignKey(Club, models.RESTRICT, blank=True, null=True)
 
     class Meta:
         constraints = [
@@ -70,25 +71,6 @@ class EventOperationsTeam(models.Model):
 
     def __str__(self):
         return f"{self.eventID} - {self.name} Team"
-    
-TeamRoles = models.TextChoices("TeamRoles", "Coordinator Volunteer")
-
-class EventOperationMember(models.Model):
-    """The Django Model representing the Operations Teams' Members."""
-    team = models.ForeignKey(EventOperationsTeam, models.RESTRICT, blank=False)
-    member = models.ForeignKey(Student, models.RESTRICT, blank=False)
-    role = models.CharField(default="Volunteer", choices=TeamRoles.choices, max_length=11)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                name='operationMember_primary_key_constraint',
-                fields=['team', 'member', 'role']
-            )
-        ]
-
-    def __str__(self):
-        return f"{self.team} - {self.role} {self.member}"
 
 class SubEvent(models.Model):
     """A Django Model representing the Sub-Events in an Event (if any)."""
@@ -113,4 +95,4 @@ class SubEvent(models.Model):
         ]
     
     def __str__(self):
-        return f"{self.eventID}:{self.subEventID} - {self.name}"
+        return f"{self.name} ({self.eventID})"

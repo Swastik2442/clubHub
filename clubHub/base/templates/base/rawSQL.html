@@ -1,25 +1,16 @@
-{% extends "base/home.html" %}
+{% extends "base/adminHome.html" %}
 
-{% block title %}Raw SQL - Admin{% endblock %}
+{% block title %}Execute Raw SQL{% endblock %}
+{% block dashTitle %}Execute Raw SQL{% endblock %}
 
 {% block content %}
-<div class="container py-5">
+<div class="container">
     <form method="post" class="row g-3">
         {% csrf_token %}
-        <h5 class="">Enter your SQL Query-</h5>
         <div class="form-floating">
-            <textarea class="form-control" id="sqlQuery" name="query" placeholder="SELECT * FROM cHub_Branch" rows="4"></textarea>
+            <textarea class="form-control" id="sqlQuery" name="query" placeholder="SELECT * FROM cHub_Branch;"></textarea>
             <label for="sqlQuery">SQL Query</label>
-            <div id="sqlHelp" class="form-text">
-                The Available Tables are-
-                <ul>
-                {% for i in tables %}
-                    <li>{{ i }}</li>
-                {% empty %}
-                    <li>None</li>
-                {% endfor %}
-                </ul>
-            </div>
+            <div id="sqlHelp" class="form-text"><strong>NOTE</strong>: Please double check the Query before Executing.</div>
         </div>
         {% if output %}
         <button type="submit" class="btn btn-danger" disabled>Submit</button>
@@ -27,12 +18,11 @@
         <button type="submit" class="btn btn-danger">Submit</button>
         {% endif %}
     </form><br>
-    {% if error %}
     <h5 class="">Output-</h5>
+    {% if error %}
     <p style="font-family: Consolas, monaco, monospace;">{{ errorOutput }}</p>
     {% else %}
     {% if output %}
-    <h5 class="">Output-</h5>
     <table class="table table-striped">
         <tbody>
             {% for row in output %}
