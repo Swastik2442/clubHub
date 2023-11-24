@@ -2,15 +2,46 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
-from django.http import HttpRequest, Http404
+from django.http import HttpRequest
 from django.db import connection
 from dotenv import load_dotenv
+from pytz import timezone
 import requests
 
+from datetime import datetime
 import logging, os
 
-from cHub.models import *
-from eventCal.models import *
+from .utils import addEvent
+from clubHub.settings import TIME_ZONE
+from cHub.models import Branch, Student, Club, ClubMember
+from eventCal.models import Event, EventSession, EventCoreTeam, EventOperationsTeam, SubEvent
+
+load_dotenv()
+SIGNUP_WEBHOOK = os.getenv("SIGNUP_WEBHOOK")
+EVENT_COLOR = os.getenv("EVENT_COLOR")
+SESSION_COLOR = os.getenv("SESSION_COLOR")
+SUBEVENT_COLOR = os.getenv("SUBEVENT_COLOR")
+logger = logging.getLogger(__name__)
+
+tz = timezone(TIME_ZONE)
+jsTimeFormat = "%Y-%m-%dT%H:%M"
+
+tables = [
+    "cHub_Branch", "cHub_Student", "cHub_Club", "cHub_ClubMember",
+    "eventCal_Event", "eventCal_EventSession", "eventCal_EventCoreTeam", "eventCal_EventOperationsTeam", "eventCal_SubEvent"
+    ]
+options = {
+    1: ["Branches", Branch, ["id"]],
+    2: ["Students", Student, ["batch_no", "branch_id", "roll_no"]],
+    3: ["Clubs", Club, ["-club_year", "club_id"]],
+    4: ["Club Members", ClubMember, ["club_id", "role"]],
+    5: ["Events", Event, ["-startDate", "-endDate", "id"]],
+    6: ["Sessions", EventSession, ["eventID", "sessionID"]],
+    7: ["Core Teams", EventCoreTeam, ["eventID"]],
+    8: ["Operations Teams", EventOperationsTeam, ["eventID", "teamID"]],
+    9: ["Sub-Events", SubEvent, ["eventID", "-startDate", "-endDate", "subEventID"]]
+}
+repetitionOptions = ['YEARLY', 'MONTHLY', 'WEEKLY', 'DAILY']
 
 def index(request):
     """The Django View for the Website Index Page."""
@@ -29,10 +60,6 @@ def login_view(request: HttpRequest):
             return render(request, 'base/login.html', {'error': 'Invalid username or password'})
     else:
         return render(request, 'base/login.html')
-
-load_dotenv()
-SIGNUP_WEBHOOK = os.getenv("SIGNUP_WEBHOOK")
-logger = logging.getLogger(__name__)
 
 def signup_view(request: HttpRequest):
     """The Django View for the Website Sign-Up Page."""
@@ -68,23 +95,6 @@ def isAdminMember(user):
     """Checks if Logged In User is a Club Admin."""
     return user.groups.filter(name='clubAdmin').exists()
 
-tables = [
-    "cHub_Branch", "cHub_Student", "cHub_Club", "cHub_ClubMember",
-    "eventCal_Event", "eventCal_EventSession", "eventCal_EventCoreTeam", "eventCal_EventOperationsTeam", "eventCal_SubEvent"
-    ]
-
-options = {
-    1: ["Branches", Branch, ["id"]],
-    2: ["Students", Student, ["batch_no", "branch_id", "roll_no"]],
-    3: ["Clubs", Club, ["-club_year", "club_id"]],
-    4: ["Club Members", ClubMember, ["club_id", "role"]],
-    5: ["Events", Event, ["-startDate", "-endDate", "id"]],
-    6: ["Sessions", EventSession, ["eventID", "sessionID"]],
-    7: ["Core Teams", EventCoreTeam, ["eventID"]],
-    8: ["Operations Teams", EventOperationsTeam, ["eventID", "teamID"]],
-    9: ["Sub-Events", SubEvent, ["eventID", "-startDate", "-endDate", "subEventID"]]
-}
-
 @user_passes_test(isAdminMember, login_url='/login')
 def adminDash(request: HttpRequest):
     """The Django View for the Admin Panel."""
@@ -95,11 +105,215 @@ def adminAdd(request: HttpRequest, opt: int):
     """The Django View for Adding Data in the Database."""
     context = {"optionNo": opt, 'option': options[opt], 'tables': tables}
     if request.method == 'POST':
+        submitted, error = False, True
+        
         if opt == 1:
-            print()
+            id = request.POST.get('id', '')
+            name = request.POST.get('name', '')
+            submitted = True
+            if not (Branch.objects.filter(id__exact=id).exists()):
+                try:
+                    new = Branch(id=id, name=name)
+                    new.save()
+                    error = False
+                except Exception:
+                    pass
+        elif opt == 2:
+            roll_no = request.POST.get('roll_no', '')
+            branch_id = request.POST.get('branch_id', '')
+            batch_no = request.POST.get('batch_no', '')
+            name = request.POST.get('name', '')
+            submitted = True
+            try:
+                Student.objects.get(batch_no__exact=batch_no, branch_id__exact=branch_id, roll_no__exact=roll_no)
+            except Exception:
+                try:
+                    branch = Branch.objects.get(id__exact=branch_id)
+                    new = Student(batch_no=batch_no, branch_id=branch, roll_no=roll_no, name=name)
+                    new.save()
+                    error = False
+                except Exception:
+                    pass
+        elif opt == 3:
+            club_id = request.POST.get('club_id', '')
+            club_year = request.POST.get('club_year', '')
+            club_name = request.POST.get('club_name', '')
+            topic = request.POST.get('topic', '')
+            faculty_mentor = request.POST.get('faculty_mentor', '')
+            logo = request.POST.get('logo', '')
+            faculty_mentor_picture = request.POST.get('faculty_mentor_picture', '')
+            president_id = request.POST.get('president_id', '')
+            vice_president_id = request.POST.get('vice_president_id', '')
+            president_picture = request.POST.get('president_picture', '')
+            vice_president_picture = request.POST.get('vice_president_picture', '')
+            submitted = True
+            if not (Club.objects.filter(club_id__exact=club_id, club_year__exact=club_year).exists()):
+                try:
+                    president = Student.objects.get(id__exact=president_id)
+                    vicePresident = Student.objects.get(id__exact=vice_president_id)
+                    new = Club(
+                        club_id=club_id, club_year=club_year, club_name=club_name, topic=topic,
+                        faculty_mentor=faculty_mentor, logo=logo,
+                        faculty_mentor_picture=faculty_mentor_picture,
+                        president_id=president, vice_president_id=vicePresident,
+                        president_picture=president_picture, vice_president_picture=vice_president_picture
+                    )
+                    new.save()
+                    error = False
+                except Exception:
+                    pass
+        elif opt == 4:
+            club_id = request.POST.get('club_id', '')
+            member = request.POST.get('member', '')
+            role = request.POST.get('role', '')
+            submitted = True
+            if not (ClubMember.objects.filter(club_id__exact=club_id, member__exact=member, role__exact=role).exists()):
+                try:
+                    club = Club.objects.get(id__exact=club_id)
+                    member = Student.objects.get(id__exact=member)
+                    new = ClubMember(club_id=club, member=member, role=role)
+                    new.save()
+                    error = False
+                except Exception:
+                    pass
+        elif opt == 5:
+            id = request.POST.get('id', '')
+            name = request.POST.get('name', '')
+            startDate = request.POST.get('startDate', '')
+            endDate = request.POST.get('endDate', '')
+            logo = request.POST.get('logo', '')
+            location = request.POST.get('location', '')
+            isOnline = request.POST.get('isOnline', '')
+            organizingHead = request.POST.get('organizingHead', '')
+            repetition = request.POST.get('repetition', '')
+            submitted = True
+
+            startDate = datetime.strptime(startDate, jsTimeFormat).astimezone(tz)
+            if endDate != '': endDate = datetime.strptime(endDate, jsTimeFormat).astimezone(tz)
+            else: endDate = None
+
+            if organizingHead != '': organizingHead = Student.objects.get(id__exact=organizingHead)
+            else: organizingHead = None
+
+            if not (Event.objects.filter(id__exact=id).exists()):
+                try:
+                    new = Event(
+                        id=id, name=name, startDate=startDate, endDate=endDate, logo=logo,
+                        location=location, isOnline=isOnline, organizingHead=organizingHead,
+                        repetition=repetition
+                    )
+                    new.save()
+                    error = False
+                    eventCreated = addEvent(name, startDate, endDate, repetition, EVENT_COLOR)
+                    if (not eventCreated): error = True
+                except Exception:
+                    pass
+        elif opt == 6:
+            eventID = request.POST.get('eventID', '')
+            sessionID = request.POST.get('sessionID', '')
+            sessionName = request.POST.get('sessionName', '')
+            startDate = request.POST.get('startDate', '')
+            endDate = request.POST.get('endDate', '')
+            submitted = True
+
+            startDate = datetime.strptime(startDate, jsTimeFormat).astimezone(tz)
+            if endDate != '': endDate = datetime.strptime(endDate, jsTimeFormat).astimezone(tz)
+            else: endDate = None
+            if not (EventSession.objects.filter(eventID__exact=eventID, sessionID__exact=sessionID).exists()):
+                try:
+                    event = Event.objects.get(id__exact=eventID)
+                    new = EventSession(
+                        eventID=event, sessionID=sessionID, sessionName=sessionName,
+                        startDate=startDate, endDate=endDate
+                    )
+                    new.save()
+                    error = False
+                    name = f"{sessionName} ({event.name})"
+                    eventCreated = addEvent(name, startDate, endDate, eventColour=SESSION_COLOR)
+                    if (not eventCreated): error = True
+                except Exception:
+                    pass
+        elif opt == 7:
+            eventID = request.POST.get('eventID', '')
+            member = request.POST.get('member', '')
+            submitted = True
+
+            event = Event.objects.get(id__exact=eventID)
+            if member != '': member = Student.objects.get(id__exact=member)
+            else: member = None
+
+            if not (EventCoreTeam.objects.filter(eventID__exact=event, member__exact=member).exists()):
+                try:
+                    new = EventCoreTeam(eventID=event, member=member)
+                    new.save()
+                    error = False
+                except Exception:
+                    pass
+        elif opt == 8:
+            eventID = request.POST.get('eventID', '')
+            teamID = request.POST.get('teamID', '')
+            name = request.POST.get('name', '')
+            coreCoordinator = request.POST.get('coreCoordinator', '')
+            relatedClub = request.POST.get('relatedClub', '')
+            submitted = True
+
+            event = Event.objects.get(id__exact=eventID)
+            if coreCoordinator != '': coreCoordinator = Student.objects.get(id__exact=coreCoordinator)
+            else: coreCoordinator = None
+            if relatedClub != '': club = Club.objects.get(id__exact=relatedClub)
+            else: club = None
+
+            if not (EventOperationsTeam.objects.filter(eventID__exact=event, teamID__exact=teamID).exists()):
+                try:
+                    new = EventOperationsTeam(
+                        eventID=event, teamID=teamID, name=name,coreCoordinator=coreCoordinator,
+                        relatedClub=club
+                    )
+                    new.save()
+                    error = False
+                except Exception:
+                    pass
+        elif opt == 9:
+            eventID = request.POST.get('eventID', '')
+            subEventID = request.POST.get('subEventID', '')
+            name = request.POST.get('name', '')
+            startDate = request.POST.get('startDate', '')
+            endDate = request.POST.get('endDate', '')
+            logo = request.POST.get('logo', '')
+            location = request.POST.get('location', '')
+            isOnline = request.POST.get('isOnline', '')
+            coreCoordinator = request.POST.get('coreCoordinator', '')
+            coordinator = request.POST.get('coordinator', '')
+            submitted = True
+
+            startDate = datetime.strptime(startDate, jsTimeFormat).astimezone(tz)
+            if endDate != '': endDate = datetime.strptime(endDate, jsTimeFormat).astimezone(tz)
+            else: endDate = None
+
+            if coreCoordinator != '': coreCoordinator = Student.objects.get(id__exact=coreCoordinator)
+            else: coreCoordinator = None
+            if coordinator != '': coordinator = Student.objects.get(id__exact=coordinator)
+            else: coordinator = None
+
+            event = Event.objects.get(id__exact=eventID)
+            if not (SubEvent.objects.filter(eventID__exact=event, subEventID__exact=subEventID).exists()):
+                try:
+                    new = SubEvent(
+                        eventID=event, subEventID=subEventID, name=name, startDate=startDate, endDate=endDate, logo=logo,
+                        location=location, isOnline=isOnline, coreCoordinator=coreCoordinator, coordinator=coordinator
+                    )
+                    new.save()
+                    error = False
+                    eventCreated = addEvent(name, startDate, endDate, eventColour=SUBEVENT_COLOR)
+                    if (not eventCreated): error = True
+                except Exception:
+                    pass
+
+        context['submitted'] = submitted
+        context['error'] = error
     else:
         if opt == 2:
-            branches = Branch.objects.all().order_by(*options[2][2])
+            branches = Branch.objects.all().order_by(*options[1][2])
             context['branches'] = branches
         if opt in range(3, 6) or opt in range(7, 10):
             students = Student.objects.all().order_by(*options[2][2])
@@ -125,7 +339,7 @@ def adminDelete(request: HttpRequest, opt: int):
 @user_passes_test(isAdminMember, login_url='/login')
 def adminPreview(request: HttpRequest, opt: int):
     """The Django View for Previewing Tables available in the Database."""
-    option = options.get(opt, None)
+    option = options.get(opt, '')
     optionDetails = None
     if (opt in range(1, 10)):
         optionDetails = (option[1]).objects.all().order_by(*option[2])

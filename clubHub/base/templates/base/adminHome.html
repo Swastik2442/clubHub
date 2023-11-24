@@ -164,7 +164,7 @@
             <div class="collapse" id="editCollapse">
               {% for i in tables %}
               <li class="nav-item">
-                <a class="nav-link d-flex align-items-center gap-2 link-body-emphasis text-black-50" href="{% url 'adminEdit' forloop.counter %}">
+                <a class="nav-link d-flex align-items-center gap-2 link-body-emphasis text-black-50" href="{% url 'adminPreview' forloop.counter %}">
                   <svg class="bi"><use xlink:href="#file"></use></svg>
                   {{ i }}
                 </a>
@@ -180,7 +180,7 @@
             <div class="collapse" id="deleteCollapse">
               {% for i in tables %}
               <li class="nav-item">
-                <a class="nav-link d-flex align-items-center gap-2 link-body-emphasis text-black-50" href="{% url 'adminDelete' forloop.counter %}">
+                <a class="nav-link d-flex align-items-center gap-2 link-body-emphasis text-black-50" href="{% url 'adminPreview' forloop.counter %}">
                   <svg class="bi"><use xlink:href="#file"></use></svg>
                   {{ i }}
                 </a>

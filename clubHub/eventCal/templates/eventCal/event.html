@@ -24,19 +24,6 @@
             <p class="lead">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Qui sint excepturi sapiente est possimus aspernatur voluptate. Cumque adipisci voluptatum provident vitae et sint, ullam, nemo possimus, fugiat assumenda officia inventore ex nihil explicabo ratione debitis! Sit, distinctio. Animi, voluptatum eaque.</p>
             <div class="d-grid gap-2 d-md-flex justify-content-md-start">
                 <a class="btn btn-primary btn-lg px-4 me-md-2" role="button" href="#">Join</a>
-                {% if adminUser %}
-                <a class="btn btn-outline-secondary btn-lg px-4" role="button" href="
-                {% if event.eventID %}
-                {% if event.subEventID %}
-                {% url 'eventAddPage' event.eventID.id event.subEventID '0' %}
-                {% else %}
-                {% url 'eventAddPage' event.eventID.id '0' event.sessionID %}
-                {% endif %}
-                {% else %}
-                {% url 'eventAddPage' event.id '0' '0' %}
-                {% endif %}
-                ">Add to Calendar</a>
-                {% endif %}
             </div>
         </div>
     </div>

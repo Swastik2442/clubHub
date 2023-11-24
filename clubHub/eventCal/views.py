@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 from clubHub.settings import TIME_ZONE
 from base.views import isAdminMember
 from .models import Event, SubEvent, EventSession
-from .utils import createCalendar
+from base.utils import createCalendar
 
 from datetime import datetime
 import logging, os, json
@@ -81,58 +81,3 @@ def eventSummary(request: HttpRequest, eventID: str, subEventID: str, sessionID:
         return render(request, "eventCal/event.html", {'event': event, 'subEvents': subEvents, 'sessions': sessions, 'adminUser': isAdminMember(request.user)})
     except ObjectDoesNotExist:
         return HttpResponseNotFound("No such Event, Sub-Event or Session")
-
-@user_passes_test(isAdminMember, login_url='/login')
-def adminAdd(request: HttpRequest, eventID: str, subEventID: str, sessionID: str):
-    """A Django View for Adding Events to Event Calendar."""
-    try:
-        event = Event.objects.get(id__exact=eventID)
-        if subEventID != '0':
-            event = SubEvent.objects.get(eventID__exact=eventID, subEventID__exact=subEventID)
-        if sessionID != '0':
-            event = EventSession.objects.get(eventID__exact=eventID, sessionID__exact=sessionID)
-    except ObjectDoesNotExist:
-        return HttpResponseNotFound("No such Event, Sub-Event or Session")
-    
-    success = False
-    alreadyAdded = False
-
-    eventName = None
-    repetitionRule = None
-    if isinstance(event, Event):
-        eventName = event.name
-        try:
-            repetitionRule = Rule.objects.get(frequency=event.repetition)
-        except ObjectDoesNotExist:
-            pass
-    elif isinstance(event, SubEvent):
-        eventName = event.name + " - " + event.eventID.name
-    else:
-        eventName = event.sessionName + " - " + event.eventID.name
-    endDate = event.endDate
-    if endDate == None:
-        endDate = event.startDate.replace(hour=23, minute=59, second=59)
-
-    data = {
-        'title': eventName,
-        'start': event.startDate,
-        'end': endDate,
-        'creator': request.user,
-        'rule': repetitionRule,
-        'calendar': Calendar.objects.get(slug=calendarName)
-    }
-    try:
-        check = schedulerEvent.objects.get(title=data['title'], start=data['start'], end=data['end'])
-        alreadyAdded = True
-    except ObjectDoesNotExist:
-        pass
-    
-    if not alreadyAdded:
-        try:
-            sEvent = schedulerEvent(**data)
-            sEvent.save()
-            success = True
-        except Exception as err:
-            logger.warning(err)
-
-    return render(request, "eventCal/adminAdd.html", {'event': event, 'success': success, 'alreadyAdded': alreadyAdded})

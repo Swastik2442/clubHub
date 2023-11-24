@@ -6,6 +6,7 @@
 
 {% block content %}
 <form method="post" class="row g-3 needs-validation" novalidate>
+{% csrf_token %}
 {% if optionNo is 1 %}
     <div class="col-md-6">
       <label for="branchID" class="form-label">Branch ID</label>
@@ -40,7 +41,7 @@
     </div>
     <div class="col-md-6">
         <label for="studentName" class="form-label">Student Name</label>
-        <input type="text" class="form-control" id="studentName" name="name" pattern="[A-Za-z]+" maxlength="30" required>
+        <input type="text" class="form-control" id="studentName" name="name" pattern="[A-Za-z ]+" maxlength="30" required>
         <div class="invalid-feedback">Please enter a valid Name.</div>
     </div>
 {% elif optionNo is 3 %}
@@ -132,18 +133,18 @@
     </div>
     <div class="col-md-6">
         <label for="memberRole" class="form-label">Member Role</label>
-        <input type="text" class="form-control" id="memberRole" name="role" pattern="[A-Za-z]+" maxlength="20" required>
+        <input type="text" class="form-control" id="memberRole" name="role" pattern="[A-Za-z ]+" maxlength="20" required>
         <div class="invalid-feedback">Please enter a valid Role.</div>
     </div>
 {% elif optionNo is 5 %}
     <div class="col-md-3">
         <label for="eventID" class="form-label">ID</label>
-        <input type="text" class="form-control" id="eventID" name="id" pattern="[A-Za-z]+" maxlength="4" required>
+        <input type="text" class="form-control" id="eventID" name="id" pattern="[A-Za-z0-9]+" maxlength="4" required>
         <div class="invalid-feedback">Please enter a valid ID.</div>
     </div>
     <div class="col-md-6">
         <label for="eventName" class="form-label">Name</label>
-        <input type="text" class="form-control" id="eventName" name="id" pattern="[A-Za-z]+" maxlength="30" required>
+        <input type="text" class="form-control" id="eventName" name="name" pattern="[A-Za-z0-9 ]+" maxlength="30" required>
         <div class="invalid-feedback">Please enter a valid Name.</div>
     </div>
     <div class="col-md-3">
@@ -209,12 +210,12 @@
     </div>
     <div class="col-md-3">
         <label for="sessionID" class="form-label">Session ID</label>
-        <input type="text" class="form-control" id="sessionID" name="id" pattern="[A-Za-z0-9_]+" maxlength="4" required>
+        <input type="text" class="form-control" id="sessionID" name="sessionID" pattern="[A-Za-z0-9_]+" maxlength="4" required>
         <div class="invalid-feedback">Please enter a valid ID.</div>
     </div>
     <div class="col-md-6">
         <label for="sessionName" class="form-label">Session Name</label>
-        <input type="text" class="form-control" id="sessionName" name="sessionName" pattern="[A-Za-z]+" maxlength="20">
+        <input type="text" class="form-control" id="sessionName" name="sessionName" pattern="[A-Za-z0-9 ]+" maxlength="20">
         <div class="invalid-feedback">Please enter a valid Name.</div>
     </div>
     <div class="col-md-6">
@@ -239,7 +240,7 @@
         <div class="invalid-feedback">Please select a valid Event.</div>
     </div>
     <div class="col-md-6">
-        <label for="memberID" class="form-label">Member Name</label>
+        <label for="memberID" class="form-label">Member</label>
         <select class="form-select" id="memberID" name="member" required>
             <option value="" selected>Select the Member</option>
             {% for i in students %}
@@ -266,7 +267,7 @@
     </div>
     <div class="col-md-6">
         <label for="teamName" class="form-label">Team Name</label>
-        <input type="text" class="form-control" id="teamName" name="name" pattern="[A-Za-z]+" maxlength="20" required>
+        <input type="text" class="form-control" id="teamName" name="name" pattern="[A-Za-z ]+" maxlength="20" required>
         <div class="invalid-feedback">Please enter a valid Name.</div>
     </div>
     <div class="col-md-6">
@@ -284,7 +285,7 @@
         <select class="form-select" id="relatedClub" name="relatedClub">
             <option value="" selected>Select the Club</option>
             {% for i in clubs %}
-            <option value="{{ i.club_id }}">{{ i }}</option>
+            <option value="{{ i.id }}">{{ i }}</option>
             {% endfor %}
         </select>
         <div class="invalid-feedback">Please select a valid Club.</div>
@@ -302,12 +303,12 @@
     </div>
     <div class="col-md-6">
         <label for="subEventID" class="form-label">Sub Event ID</label>
-        <input type="text" class="form-control" id="subEventID" name="subEventID" pattern="[A-Za-z]+" maxlength="4" required>
+        <input type="text" class="form-control" id="subEventID" name="subEventID" pattern="[A-Za-z0-9_]+" maxlength="4" required>
         <div class="invalid-feedback">Please enter a valid ID.</div>
     </div>
     <div class="col-md-6">
         <label for="subEventName" class="form-label">Name</label>
-        <input type="text" class="form-control" id="subEventName" name="name" pattern="[A-Za-z]+" maxlength="30" required>
+        <input type="text" class="form-control" id="subEventName" name="name" pattern="[A-Za-z0-9 ]+" maxlength="30" required>
         <div class="invalid-feedback">Please enter a valid Name.</div>
     </div>
     <div class="col-md-6">

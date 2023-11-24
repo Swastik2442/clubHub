@@ -72,6 +72,8 @@
         <th>Core Coordinator</th>
         <th>Coordinator</th>
       {% endif %}
+        <th></th>
+        <th></th>
       </tr>
 
       {% for detail in details %}
@@ -138,7 +140,13 @@
         {% else %}
         <td colspan="2"></td>
         {% endif %}
-      {% endif %}
+        {% endif %}
+        <td>
+          <a class="btn btn-secondary" href="{% url 'adminEdit' optionNo detail.id %}">Edit</a>
+        </td>
+        <td>
+          <a class="btn btn-danger" href="{% url 'adminDelete' optionNo detail.id %}">Delete</a>
+        </td>
       </tr>
     {% empty %}
     <p>No more details found!</p>
