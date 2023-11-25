@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 
 from clubHub.settings import TIME_ZONE
 from base.views import isAdminMember
-from .models import Event, SubEvent, EventSession
+from .models import Event, EventCoreTeam, EventOperationsTeam, EventSession, SubEvent
 from base.utils import createCalendar
 
 from datetime import datetime
@@ -71,13 +71,22 @@ def eventSummary(request: HttpRequest, eventID: str, subEventID: str, sessionID:
         event = Event.objects.get(id__exact=eventID)
         subEvents = None
         sessions = None
+        coreTeam = None
+        operationsTeams = None
         if subEventID == '0' and sessionID == '0':
             subEvents = SubEvent.objects.filter(eventID__exact=eventID).order_by("startDate", "endDate")
             sessions = EventSession.objects.filter(eventID__exact=eventID).order_by("startDate", "endDate")
+            coreTeam = EventCoreTeam.objects.filter(eventID__exact=eventID)
+            operationsTeams = EventOperationsTeam.objects.filter(eventID__exact=eventID)
         elif sessionID == '0':
             event = SubEvent.objects.get(eventID__exact=eventID, subEventID__exact=subEventID)
         else:
             event = EventSession.objects.get(eventID__exact=eventID, sessionID__exact=sessionID)
-        return render(request, "eventCal/event.html", {'event': event, 'subEvents': subEvents, 'sessions': sessions, 'adminUser': isAdminMember(request.user)})
+        context = {
+            'event': event, 'subEvents': subEvents, 'sessions': sessions,
+            'coreTeam': coreTeam, 'operationsTeams': operationsTeams,
+            'adminUser': isAdminMember(request.user)
+        }
+        return render(request, "eventCal/event.html", context)
     except ObjectDoesNotExist:
         return HttpResponseNotFound("No such Event, Sub-Event or Session")

@@ -45,6 +45,7 @@
         <th>Location</th>
         <th>Is Online?</th>
         <th>Organizing Head</th>
+        <th>Repeats?</th>
         {% elif optionNo is 6 %}
         <th>Event</th>
         <th>Session ID</th>
@@ -110,6 +111,7 @@
         <td>{{ detail.location }}</td>
         <td>{{ detail.isOnline }}</td>
         <td>{{ detail.organizingHead }}</td>
+        <td>{% if detail.repetition != '' %}{{ detail.repetition }}{% else %}NO{% endif %}</td>
       {% elif optionNo is 6 %}
         <td>{{ detail.eventID }}</td>
         <td>{{ detail.sessionID }}</td>

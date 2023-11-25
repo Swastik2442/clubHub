@@ -3,3 +3,485 @@
 
 {% block title %}Edit Data{% endblock %}
 {% block dashTitle %}Edit Data{% endblock %}
+
+{% block content %}
+<form method="post" class="row g-3 needs-validation" novalidate>
+    {% csrf_token %}
+    {% if optionNo is 1 %}
+        <div class="col-md-6">
+          <label for="branchID" class="form-label">Branch ID</label>
+          <input type="text" class="form-control" id="branchID" name="id" pattern="[A-Za-z0-9_]+" maxlength="4" value="{{ record.id }}" required>
+          <div class="invalid-feedback">Please enter a valid ID.</div>
+        </div>
+        <div class="col-md-6">
+          <label for="branchName" class="form-label">Branch Name</label>
+          <input type="text" class="form-control" id="branchName" name="name" pattern="[A-Za-z0-9 \/\,\.\-\(\)]+" maxlength="30" value="{{ record.name }}" required>
+          <div class="invalid-feedback">Please enter a valid Name.</div>
+        </div>
+    {% elif optionNo is 2 %}
+        <div class="col-md-6">
+            <label for="rollNo" class="form-label">Roll No.</label>
+            <input type="number" class="form-control" id="rollNo" name="roll_no" maxlength="3" value="{{ record.roll_no }}" required>
+            <div class="invalid-feedback">Please enter a valid Roll Number.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="branchName" class="form-label">Branch</label>
+            <select class="form-select" id="branch_id" name="branch_id" required>
+                <option value="">Select Branch</option>
+                {% for i in branches %}
+                {% if i.id == record.branch_id.id %}
+                <option value="{{ i.id }}" selected>{{ i.name }}</option>
+                {% else %}
+                <option value="{{ i.id }}">{{ i.name }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a valid Branch.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="batchNo" class="form-label">Batch No.</label>
+            <input type="number" class="form-control" id="batchNo" name="batch_no" min="2000" max="2099" value="{{ record.batch_no }}" required>
+            <div class="invalid-feedback">Please enter a valid Batch Number.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="studentName" class="form-label">Student Name</label>
+            <input type="text" class="form-control" id="studentName" name="name" pattern="[A-Za-z ]+" maxlength="30" value="{{ record.name }}" required>
+            <div class="invalid-feedback">Please enter a valid Name.</div>
+        </div>
+    {% elif optionNo is 3 %}
+        <div class="col-md-3">
+            <label for="clubID" class="form-label">Club ID</label>
+            <input type="text" class="form-control" id="clubID" name="club_id" pattern="[A-Za-z0-9_]+" maxlength="10" value="{{ record.club_id }}" required>
+            <div class="invalid-feedback">Please enter a valid ID.</div>
+        </div>
+        <div class="col-md-3">
+            <label for="clubYear" class="form-label">Club Year</label>
+            <input type="number" class="form-control" id="clubYear" name="club_year" min="2000" max="2099" value="{{ record.club_year }}" required>
+            <div class="invalid-feedback">Please enter a valid Year.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="clubName" class="form-label">Club Name</label>
+            <input type="text" class="form-control" id="clubName" name="club_name" pattern="[A-Za-z0-9 \/\,\.\-\(\)]+" maxlength="50" value="{{ record.club_name }}" required>
+            <div class="invalid-feedback">Please enter a valid Name.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="clubTopic" class="form-label">Club Topic</label>
+            <input type="text" class="form-control" id="clubTopic" name="topic" pattern="[A-Za-z]+" maxlength="50" value="{{ record.topic }}" required>
+            <div class="invalid-feedback">Please enter a valid Topic Name.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="clubLogo" class="form-label">Logo</label>
+            <input type="url" class="form-control" id="clubLogo" name="logo" maxlength="200" value="{{ record.logo }}">
+            <div class="invalid-feedback">Please enter a valid URL.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="facultyMentor" class="form-label">Faculty Mentor</label>
+            <input type="text" class="form-control" id="facultyMentor" name="faculty_mentor" pattern="[A-Za-z]+" maxlength="50" value="{{ record.faculty_mentor }}">
+            <div class="invalid-feedback">Please enter a valid Name.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="facultyMentorPicture" class="form-label">Faculty Mentor Picture</label>
+            <input type="url" class="form-control" id="facultyMentorPicture" name="faculty_mentor_picture" maxlength="200" value="{{ record.faculty_mentor_picture }}">
+            <div class="invalid-feedback">Please enter a valid URL.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="presidentID" class="form-label">President</label>
+            <select class="form-select" id="presidentID" name="president_id" required>
+                <option value="">Select the President</option>
+                {% for i in students %}
+                {% if i.id == record.president_id.id %}
+                <option value="{{ i.id }}" selected>{{ i }}</option>
+                {% else %}
+                <option value="{{ i.id }}">{{ i }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a valid Student.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="presidentPicture" class="form-label">President Picture</label>
+            <input type="url" class="form-control" id="presidentPicture" name="president_picture" maxlength="200" value="{{ record.president_picture }}">
+            <div class="invalid-feedback">Please enter a valid URL.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="vicePresidentID" class="form-label">Vice-President</label>
+            <select class="form-select" id="vicePresidentID" name="vice_president_id" required>
+                {% if record.vice_president_id %}
+                <option value="" selected>Select the Vice-President</option>
+                {% else %}
+                <option value="">Select the Vice-President</option>
+                {% endif %}
+                {% for i in students %}
+                {% if i.id == record.vice_president_id.id %}
+                <option value="{{ i.id }}" selected>{{ i }}</option>
+                {% else %}
+                <option value="{{ i.id }}">{{ i }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a valid Student.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="vicePresidentPicture" class="form-label">Vice-President Picture</label>
+            <input type="url" class="form-control" id="vicePresidentPicture" name="vice_president_picture" maxlength="200" value="{{ record.vice_president_picture }}">
+            <div class="invalid-feedback">Please enter a valid URL.</div>
+        </div>
+    {% elif optionNo is 4 %}
+        <div class="col-md-12">
+            <label for="clubID" class="form-label">Club</label>
+            <select class="form-select" id="clubID" name="club_id" required>
+                <option value="">Select the Club</option>
+                {% for i in clubs %}
+                {% if i.id == record.club_id.id %}
+                <option value="{{ i.id }}" selected>{{ i }}</option>
+                {% else %}
+                <option value="{{ i.id }}">{{ i }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a valid Club.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="memberID" class="form-label">Member Name</label>
+            <select class="form-select" id="memberID" name="member" required>
+                <option value="">Select the Member</option>
+                {% for i in students %}
+                {% if i.id == record.member.id %}
+                <option value="{{ i.id }}" selected>{{ i }}</option>
+                {% else %}
+                <option value="{{ i.id }}">{{ i }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a valid Student.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="memberRole" class="form-label">Member Role</label>
+            <input type="text" class="form-control" id="memberRole" name="role" pattern="[A-Za-z ]+" maxlength="20" value="{{ record.role }}" required>
+            <div class="invalid-feedback">Please enter a valid Role.</div>
+        </div>
+    {% elif optionNo is 5 %}
+        <div class="col-md-3">
+            <label for="eventID" class="form-label">ID</label>
+            <input type="text" class="form-control" id="eventID" name="id" pattern="[A-Za-z0-9]+" maxlength="4" value="{{ record.id }}" required>
+            <div class="invalid-feedback">Please enter a valid ID.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="eventName" class="form-label">Name</label>
+            <input type="text" class="form-control" id="eventName" name="name" pattern="[A-Za-z0-9 \/\,\.\-\(\)]+" maxlength="30" value="{{ record.name }}" required>
+            <div class="invalid-feedback">Please enter a valid Name.</div>
+        </div>
+        <div class="col-md-3">
+            <label for="eventRepetition" class="form-label">Event Repeats</label>
+            <select class="form-select" id="eventRepetition" name="repetition">
+                {% if record.repetition == '' %}
+                <option value="" selected>Select the Repetition</option>
+                {% else %}
+                <option value="">Select the Repetition</option>
+                {% endif %}
+                {% for k, v in repetitionOptions.items %}
+                {% if record.repetition == v %}
+                <option value="{{ v }}" selected>{{ k }}</option>
+                {% else %}
+                <option value="{{ v }}">{{ k }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a valid Repetition Mode.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="startDate" class="form-label">Start Time</label>
+            <input type="datetime-local" class="form-control" id="startDate" name="startDate" value="{{ record.startDate|date:'Y-m-d\TH:i:s' }}" required>
+            <div class="invalid-feedback">Please enter a valid Date & Time.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="endDate" class="form-label">End Time</label>
+            <input type="datetime-local" class="form-control" id="endDate" name="endDate" value="{{ record.endDate|date:'Y-m-d\TH:i:s' }}">
+            <div class="invalid-feedback">Please enter a valid Date & Time.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="eventLogo" class="form-label">Logo</label>
+            <input type="url" class="form-control" id="eventLogo" name="logo" maxlength="200" value="{{ record.logo }}">
+            <div class="invalid-feedback">Please enter a valid URL.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="organizingHead" class="form-label">Organizing Head</label>
+            <select class="form-select" id="organizingHead" name="organizingHead">
+                {% if record.organizingHead %}
+                <option value="">Select the Organizing Head</option>
+                {% else %}
+                <option value="" selected>Select the Organizing Head</option>
+                {% endif %}
+                {% for i in students %}
+                {% if i.id == record.organizingHead.id %}
+                <option value="{{ i.id }}" selected>{{ i }}</option>
+                {% else %}
+                <option value="{{ i.id }}">{{ i }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a valid Student.</div>
+        </div>
+        <div class="col-md-8">
+            <label for="eventLocation" class="form-label">Location</label>
+            <input type="text" class="form-control" id="eventLocation" name="location" pattern="[A-Za-z0-9 \/\,\.\-\(\)]+" maxlength="50" value="{{ record.location }}">
+            <div class="invalid-feedback">Please enter a valid Location.</div>
+        </div>
+        <div class="col-md-4">
+            <label for="eventMode" class="form-label">Event Mode</label>
+            <select class="form-select" id="eventMode" name="isOnline" required>
+                <option value="">Select the Mode</option>
+                {% if record.isOnline is True %}
+                <option value="1" selected>Online</option>
+                <option value="0">Offline</option>
+                {% else %}
+                <option value="1">Online</option>
+                <option value="0" selected>Offline</option>
+                {% endif %}
+            </select>
+            <div class="invalid-feedback">Please select a valid Mode.</div>
+        </div>
+    {% elif optionNo is 6 %}
+        <div class="col-md-3">
+            <label for="eventID" class="form-label">Event</label>
+            <select class="form-select" id="eventID" name="eventID" required>
+                <option value="">Select the Event</option>
+                {% for i in events %}
+                {% if i.id == record.eventID.id %}
+                <option value="{{ i.id }}" selected>{{ i }}</option>
+                {% else %}
+                <option value="{{ i.id }}">{{ i }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a valid Event.</div>
+        </div>
+        <div class="col-md-3">
+            <label for="sessionID" class="form-label">Session ID</label>
+            <input type="text" class="form-control" id="sessionID" name="sessionID" pattern="[A-Za-z0-9_]+" maxlength="4" value="{{ record.sessionID }}" required>
+            <div class="invalid-feedback">Please enter a valid ID.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="sessionName" class="form-label">Session Name</label>
+            <input type="text" class="form-control" id="sessionName" name="sessionName" pattern="[A-Za-z0-9 \/\,\.\-\(\)]+" maxlength="20" value="{{ record.sessionName }}">
+            <div class="invalid-feedback">Please enter a valid Name.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="startDate" class="form-label">Start Time</label>
+            <input type="datetime-local" class="form-control" id="startDate" name="startDate" value="{{ record.startDate|date:'Y-m-d\TH:i:s' }}" required>
+            <div class="invalid-feedback">Please enter a valid Date & Time.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="endDate" class="form-label">End Time</label>
+            <input type="datetime-local" class="form-control" id="endDate" name="endDate" value="{{ record.endDate|date:'Y-m-d\TH:i:s' }}">
+            <div class="invalid-feedback">Please enter a valid Date & Time.</div>
+        </div>
+    {% elif optionNo is 7 %}
+        <div class="col-md-6">
+            <label for="eventID" class="form-label">Event</label>
+            <select class="form-select" id="eventID" name="eventID" required>
+                <option value="">Select the Event</option>
+                {% for i in events %}
+                {% if i.id == record.eventID.id %}
+                <option value="{{ i.id }}" selected>{{ i }}</option>
+                {% else %}
+                <option value="{{ i.id }}">{{ i }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a valid Event.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="memberID" class="form-label">Member</label>
+            <select class="form-select" id="memberID" name="member" required>
+                <option value="">Select the Member</option>
+                {% for i in students %}
+                {% if i.id == record.member.id %}
+                <option value="{{ i.id }}" selected>{{ i }}</option>
+                {% else %}
+                <option value="{{ i.id }}">{{ i }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a valid Student.</div>
+        </div>
+    {% elif optionNo is 8 %}
+        <div class="col-md-3">
+            <label for="eventID" class="form-label">Event</label>
+            <select class="form-select" id="eventID" name="eventID" required>
+                <option value="">Select the Event</option>
+                {% for i in events %}
+                {% if i.id == record.eventID.id %}
+                <option value="{{ i.id }}" selected>{{ i }}</option>
+                {% else %}
+                <option value="{{ i.id }}">{{ i }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a valid Event.</div>
+        </div>
+        <div class="col-md-3">
+            <label for="teamID" class="form-label">Team ID</label>
+            <input type="text" class="form-control" id="teamID" name="teamID" pattern="[A-Za-z0-9_]+" maxlength="4" value="{{ record.teamID }}" required>
+            <div class="invalid-feedback">Please enter a valid ID.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="teamName" class="form-label">Team Name</label>
+            <input type="text" class="form-control" id="teamName" name="name" pattern="[A-Za-z ]+" maxlength="20" value="{{ record.name }}" required>
+            <div class="invalid-feedback">Please enter a valid Name.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="coreCoordinator" class="form-label">Core Coordinator</label>
+            <select class="form-select" id="coreCoordinator" name="coreCoordinator" required>
+                <option value="">Select the Core Coordinator</option>
+                {% for i in students %}
+                {% if i.id == record.coreCoordinator.id %}
+                <option value="{{ i.id }}" selected>{{ i }}</option>
+                {% else %}
+                <option value="{{ i.id }}">{{ i }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a valid Student.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="relatedClub" class="form-label">Related Club</label>
+            <select class="form-select" id="relatedClub" name="relatedClub">
+                {% if record.relatedClub %}
+                <option value="">Select the Club</option>
+                {% else %}
+                <option value="" selected>Select the Club</option>
+                {% endif %}
+                {% for i in clubs %}
+                {% if i.id == record.relatedClub.id %}
+                <option value="{{ i.id }}" selected>{{ i }}</option>
+                {% else %}
+                <option value="{{ i.id }}">{{ i }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a valid Club.</div>
+        </div>
+    {% elif optionNo is 9 %}
+        <div class="col-md-6">
+            <label for="eventID" class="form-label">Event</label>
+            <select class="form-select" id="eventID" name="eventID" required>
+                <option value="">Select the Event</option>
+                {% for i in events %}
+                {% if i.id == record.eventID.id %}
+                <option value="{{ i.id }}" selected>{{ i }}</option>
+                {% else %}
+                <option value="{{ i.id }}">{{ i }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a valid Event.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="subEventID" class="form-label">Sub Event ID</label>
+            <input type="text" class="form-control" id="subEventID" name="subEventID" pattern="[A-Za-z0-9_]+" maxlength="4" value="{{ record.subEventID }}" required>
+            <div class="invalid-feedback">Please enter a valid ID.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="subEventName" class="form-label">Name</label>
+            <input type="text" class="form-control" id="subEventName" name="name" pattern="[A-Za-z0-9 \/\,\.\-\(\)]+" maxlength="30" value="{{ record.name }}" required>
+            <div class="invalid-feedback">Please enter a valid Name.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="subEventLogo" class="form-label">Logo</label>
+            <input type="url" class="form-control" id="subEventLogo" name="logo" maxlength="200" value="{{ record.logo }}">
+            <div class="invalid-feedback">Please enter a valid URL.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="startDate" class="form-label">Start Time</label>
+            <input type="datetime-local" class="form-control" id="startDate" name="startDate" value="{{ record.startDate|date:'Y-m-d\TH:i:s' }}" required>
+            <div class="invalid-feedback">Please enter a valid Date & Time.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="endDate" class="form-label">End Time</label>
+            <input type="datetime-local" class="form-control" id="endDate" name="endDate" value="{{ record.endDate|date:'Y-m-d\TH:i:s' }}">
+            <div class="invalid-feedback">Please enter a valid Date & Time.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="coreCoordinator" class="form-label">Core Coordinator</label>
+            <select class="form-select" id="coreCoordinator" name="coreCoordinator" required>
+                <option value="">Select the Core Coordinator</option>
+                {% for i in students %}
+                {% if i.id == record.coreCoordinator.id %}
+                <option value="{{ i.id }}" selected>{{ i }}</option>
+                {% else %}
+                <option value="{{ i.id }}">{{ i }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a valid Student. If there is no Core Coordinator, select the Organizing Head.</div>
+        </div>
+        <div class="col-md-6">
+            <label for="coordinator" class="form-label">Coordinator</label>
+            <select class="form-select" id="coordinator" name="coordinator" required>
+                <option value="">Select the Coordinator</option>
+                {% for i in students %}
+                {% if i.id == record.coordinator.id %}
+                <option value="{{ i.id }}" selected>{{ i }}</option>
+                {% else %}
+                <option value="{{ i.id }}">{{ i }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Please select a valid Student. If there is no Coordinator, select the Organizing Head.</div>
+        </div>
+        <div class="col-md-8">
+            <label for="subEventLocation" class="form-label">Location</label>
+            <input type="text" class="form-control" id="subEventLocation" name="location" pattern="[A-Za-z0-9 \/\,\.\-\(\)]+" maxlength="50" value="{{ record.location }}">
+            <div class="invalid-feedback">Please enter a valid Location.</div>
+        </div>
+        <div class="col-md-4">
+            <label for="subEventMode" class="form-label">Event Mode</label>
+            <select class="form-select" id="subEventMode" name="isOnline" required>
+                <option value="">Select the Mode</option>
+                {% if record.isOnline is True %}
+                <option value="1" selected>Online</option>
+                <option value="0">Offline</option>
+                {% else %}
+                <option value="1">Online</option>
+                <option value="0" selected>Offline</option>
+                {% endif %}
+            </select>
+            <div class="invalid-feedback">Please select a valid Mode.</div>
+        </div>
+    {% endif %}
+        {% if submitted %}
+        {% if error %}
+        <p>
+            <svg class="bi"><use xlink:href="#bug"></use></svg>
+            An error occured while processing your request.
+        </p>
+        {% else %}
+        <p>
+            <svg class="bi"><use xlink:href="#check-mark"></use></svg>
+            Data edited Successfully.
+        </p>
+        {% endif %}
+        <button type="submit" class="btn btn-primary" disabled>Edit</button>
+        <button type="reset" class="btn btn-secondary" disabled>Reset</button>
+        {% else %}
+        <button type="submit" class="btn btn-primary">Edit</button>
+        <button type="reset" class="btn btn-secondary">Reset</button>
+        {% endif %}
+</form>
+<script>
+    (() => {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation')
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+{% endblock %}

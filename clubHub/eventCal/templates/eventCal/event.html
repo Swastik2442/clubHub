@@ -28,6 +28,7 @@
         </div>
     </div>
 </div>
+
 <div class="container text-center py-3">
     <div class="row align-items-center">
       <div class="col-md-4 p-3">
@@ -59,6 +60,22 @@
       {% endif %}
     </div>
 </div>
+
+{% if event.coreCoordinator or event.coordinator and event.coreCoordinator is not event.Coordinator %}
+<div class="container text-center py-3">
+    <div class="row align-items-center">
+      <div class="col-md-6 p-3">
+        <h3>Core Coordinator</h3>
+        <p class="text-secondary-emphasis">{{ event.coreCoordinator.name }}</p>
+      </div>
+      <div class="col-md-6 p-3">
+        <h3>Coordinator</h3>
+        <p class="text-secondary-emphasis">{{ event.coordinator.name }}</p>
+      </div>
+    </div>
+</div>
+{% endif %}
+
 <div class="container py-3 text-center">
     <h5>Share</h5>
     <ul class="justify-content-center list-unstyled d-flex">
@@ -79,6 +96,40 @@
         </a></li>
       </ul>
 </div>
+
+{% if coreTeam %}
+<div class="container py-3">
+    <h3 class="text-center">Core Team</h3><hr>
+    <table class="table table-light table-hover text-center">
+        {% for member in coreTeam %}
+        <tr>
+            <td>{{ member.member.name }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endif %}
+
+{% if operationsTeams %}
+<div class="container py-3">
+    <h3 class="text-center">Operations Teams</h3><hr>
+    <table class="table table-light table-hover text-center">
+        <tr>
+            <th>Name</th>
+            <th>Core Coordinator</th>
+            <th>Related Club</th>
+        </tr>
+        {% for team in operationsTeams %}
+        <tr>
+            <td>{{ team.name }}</td>
+            <td>{{ team.coreCoordinator.name }}</td>
+            <td>{{ team.relatedClub.club_name }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endif %}
+
 {% if subEvents %}
 <div class="container py-3">
     <h3 class="text-center">Sub Events</h3><hr>
@@ -118,6 +169,7 @@
     </table><hr>
 </div>
 {% endif %}
+
 {% if sessions %}
 <div class="container py-3">
     <h3 class="text-center">Event Sessions</h3><hr>
@@ -142,6 +194,7 @@
     </table><hr>
 </div>
 {% endif %}
+
 <script>
     jQuery(document).ready(function($) {
         $(".row-link").click(function() {

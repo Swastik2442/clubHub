@@ -1,9 +1,9 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import authenticate, login, logout
+from django.http import HttpRequest, HttpResponseNotFound
 from django.shortcuts import render, redirect
-from django.http import HttpRequest
-from django.db import connection
+from django.db import connection, models
 from dotenv import load_dotenv
 from pytz import timezone
 import requests
@@ -11,7 +11,7 @@ import requests
 from datetime import datetime
 import logging, os
 
-from .utils import addEvent
+from .utils import addEvent, getEvent, editEvent
 from clubHub.settings import TIME_ZONE
 from cHub.models import Branch, Student, Club, ClubMember
 from eventCal.models import Event, EventSession, EventCoreTeam, EventOperationsTeam, SubEvent
@@ -41,7 +41,7 @@ options = {
     8: ["Operations Teams", EventOperationsTeam, ["eventID", "teamID"]],
     9: ["Sub-Events", SubEvent, ["eventID", "-startDate", "-endDate", "subEventID"]]
 }
-repetitionOptions = ['YEARLY', 'MONTHLY', 'WEEKLY', 'DAILY']
+repetitionOptions = {'Yearly': 'YEARLY', 'Monthly': 'MONTHLY', 'Weekly': 'WEEKLY', 'Daily': 'DAILY'}
 
 def index(request):
     """The Django View for the Website Index Page."""
@@ -63,6 +63,7 @@ def login_view(request: HttpRequest):
 
 def signup_view(request: HttpRequest):
     """The Django View for the Website Sign-Up Page."""
+    # TODO: Implement a better way to Sign-Up, ie, including Authentication with University
     if request.method == 'POST':
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
@@ -103,7 +104,7 @@ def adminDash(request: HttpRequest):
 @user_passes_test(isAdminMember, login_url='/login')
 def adminAdd(request: HttpRequest, opt: int):
     """The Django View for Adding Data in the Database."""
-    context = {"optionNo": opt, 'option': options[opt], 'tables': tables}
+    context = {'optionNo': opt, 'option': options[opt], 'tables': tables, 'repetitionOptions': repetitionOptions}
     if request.method == 'POST':
         submitted, error = False, True
         
@@ -124,9 +125,7 @@ def adminAdd(request: HttpRequest, opt: int):
             batch_no = request.POST.get('batch_no', '')
             name = request.POST.get('name', '')
             submitted = True
-            try:
-                Student.objects.get(batch_no__exact=batch_no, branch_id__exact=branch_id, roll_no__exact=roll_no)
-            except Exception:
+            if not (Student.objects.filter(batch_no__exact=batch_no, branch_id__exact=branch_id, roll_no__exact=roll_no).exists()):
                 try:
                     branch = Branch.objects.get(id__exact=branch_id)
                     new = Student(batch_no=batch_no, branch_id=branch, roll_no=roll_no, name=name)
@@ -266,7 +265,7 @@ def adminAdd(request: HttpRequest, opt: int):
             if not (EventOperationsTeam.objects.filter(eventID__exact=event, teamID__exact=teamID).exists()):
                 try:
                     new = EventOperationsTeam(
-                        eventID=event, teamID=teamID, name=name,coreCoordinator=coreCoordinator,
+                        eventID=event, teamID=teamID, name=name, coreCoordinator=coreCoordinator,
                         relatedClub=club
                     )
                     new.save()
@@ -304,6 +303,7 @@ def adminAdd(request: HttpRequest, opt: int):
                     )
                     new.save()
                     error = False
+                    name = f"{name} ({event.name})"
                     eventCreated = addEvent(name, startDate, endDate, eventColour=SUBEVENT_COLOR)
                     if (not eventCreated): error = True
                 except Exception:
@@ -327,14 +327,316 @@ def adminAdd(request: HttpRequest, opt: int):
     return render(request, 'base/adminAdd.html', context)
 
 @user_passes_test(isAdminMember, login_url='/login')
-def adminEdit(request: HttpRequest, opt: int):
+def adminEdit(request: HttpRequest, opt: int, recordID: str):
     """The Django View for Editing Data in the Database."""
-    return render(request, 'base/adminEdit.html', {'tables': tables})
+    context = {'optionNo': opt, 'option': options[opt], 'tables': tables, 'repetitionOptions': repetitionOptions}
+    record: models.Model
+    try:
+        record = (context['option'][1]).objects.get(id__exact=recordID)
+    except Exception:
+        return HttpResponseNotFound(request)
+    
+    if request.method == 'POST':
+        submitted, error = False, True
+
+        if opt == 1:
+            id = request.POST.get('id', '')
+            name = request.POST.get('name', '')
+            submitted = True
+            try:
+                record.id = id
+                record.name = name
+                record.save()
+                error = False
+            except Exception:
+                pass
+        elif opt == 2:
+            roll_no = request.POST.get('roll_no', '')
+            branch_id = request.POST.get('branch_id', '')
+            batch_no = request.POST.get('batch_no', '')
+            name = request.POST.get('name', '')
+            submitted = True
+            try:
+                branch = Branch.objects.get(id__exact=branch_id)
+                record.batch_no = batch_no
+                record.branch_id = branch
+                record.roll_no = roll_no
+                record.name = name
+                record.save()
+                error = False
+            except Exception:
+                pass
+        elif opt == 3:
+            club_id = request.POST.get('club_id', '')
+            club_year = request.POST.get('club_year', '')
+            club_name = request.POST.get('club_name', '')
+            topic = request.POST.get('topic', '')
+            faculty_mentor = request.POST.get('faculty_mentor', '')
+            logo = request.POST.get('logo', '')
+            faculty_mentor_picture = request.POST.get('faculty_mentor_picture', '')
+            president_id = request.POST.get('president_id', '')
+            vice_president_id = request.POST.get('vice_president_id', '')
+            president_picture = request.POST.get('president_picture', '')
+            vice_president_picture = request.POST.get('vice_president_picture', '')
+            submitted = True
+            try:
+                president = Student.objects.get(id__exact=president_id)
+                vicePresident = Student.objects.get(id__exact=vice_president_id)
+                
+                record.club_id = club_id
+                record.club_year = club_year
+                record.club_name = club_name
+                record.topic = topic
+                record.faculty_mentor = faculty_mentor
+                record.logo = logo,
+                record.faculty_mentor_picture = faculty_mentor_picture
+                record.president_id = president
+                record.vice_president_id = vicePresident
+                record.president_picture = president_picture
+                record.vice_president_picture = vice_president_picture
+                record.save()
+                error = False
+            except Exception:
+                pass
+        elif opt == 4:
+            club_id = request.POST.get('club_id', '')
+            member = request.POST.get('member', '')
+            role = request.POST.get('role', '')
+            submitted = True
+            try:
+                club = Club.objects.get(id__exact=club_id)
+                member = Student.objects.get(id__exact=member)
+                record.club_id = club
+                record.member = member
+                record.role = role
+                record.save()
+                error = False
+            except Exception:
+                pass
+        elif opt == 5:
+            id = request.POST.get('id', '')
+            name = request.POST.get('name', '')
+            startDate = request.POST.get('startDate', '')
+            endDate = request.POST.get('endDate', '')
+            logo = request.POST.get('logo', '')
+            location = request.POST.get('location', '')
+            isOnline = request.POST.get('isOnline', '')
+            organizingHead = request.POST.get('organizingHead', '')
+            repetition = request.POST.get('repetition', '')
+            submitted = True
+    
+            startDate = datetime.strptime(startDate, jsTimeFormat).astimezone(tz)
+            if endDate != '': endDate = datetime.strptime(endDate, jsTimeFormat).astimezone(tz)
+            else: endDate = None
+
+            if organizingHead != '': organizingHead = Student.objects.get(id__exact=organizingHead)
+            else: organizingHead = None
+
+            try:
+                oldEvent = getEvent(record.name, record.startDate, record.endDate, record.repetition, EVENT_COLOR)
+                record.id = id
+                record.name = name
+                record.startDate = startDate
+                record.endDate = endDate
+                record.logo = logo
+                record.location = location
+                record.isOnline = isOnline
+                record.organizingHead = organizingHead
+                record.repetition = repetition
+                record.save()
+                error = False
+                eventEdited = editEvent(oldEvent, record.name, record.startDate, record.endDate, record.repetition, EVENT_COLOR)
+                if (not eventEdited): error = True
+            except Exception:
+                pass
+        elif opt == 6:
+            eventID = request.POST.get('eventID', '')
+            sessionID = request.POST.get('sessionID', '')
+            sessionName = request.POST.get('sessionName', '')
+            startDate = request.POST.get('startDate', '')
+            endDate = request.POST.get('endDate', '')
+            submitted = True
+
+            startDate = datetime.strptime(startDate, jsTimeFormat).astimezone(tz)
+            if endDate != '': endDate = datetime.strptime(endDate, jsTimeFormat).astimezone(tz)
+            else: endDate = None
+            try:
+                oldEvent = record.eventID
+                oldName = f"{record.sessionName} ({oldEvent.name})"
+                oldSession = getEvent(oldName, record.startDate, record.endDate, eventColour=SESSION_COLOR)
+
+                newEvent = Event.objects.get(id__exact=eventID)
+                record.eventID = newEvent
+                record.sessionID = sessionID
+                record.sessionName = sessionName
+                record.startDate = startDate
+                record.endDate = endDate
+                record.save()
+                error = False
+                newName = f"{sessionName} ({newEvent.name})"
+                eventEdited = editEvent(oldSession, newName, startDate, endDate, eventColour=SESSION_COLOR)
+                if (not eventEdited): error = True
+            except Exception:
+                pass
+        elif opt == 7:
+            eventID = request.POST.get('eventID', '')
+            member = request.POST.get('member', '')
+            submitted = True
+
+            event = Event.objects.get(id__exact=eventID)
+            if member != '': member = Student.objects.get(id__exact=member)
+            else: member = None
+
+            try:
+                record.eventID = event
+                record.member = member
+                record.save()
+                error = False
+            except Exception:
+                pass
+        elif opt == 8:
+            eventID = request.POST.get('eventID', '')
+            teamID = request.POST.get('teamID', '')
+            name = request.POST.get('name', '')
+            coreCoordinator = request.POST.get('coreCoordinator', '')
+            relatedClub = request.POST.get('relatedClub', '')
+            submitted = True
+
+            event = Event.objects.get(id__exact=eventID)
+            if coreCoordinator != '': coreCoordinator = Student.objects.get(id__exact=coreCoordinator)
+            else: coreCoordinator = None
+            if relatedClub != '': club = Club.objects.get(id__exact=relatedClub)
+            else: club = None
+
+            if not (EventOperationsTeam.objects.filter(eventID__exact=event, teamID__exact=teamID).exists()):
+                try:
+                    record.eventID = event
+                    record.teamID = teamID
+                    record.name = name
+                    record.coreCoordinator = coreCoordinator
+                    record.relatedClub = club
+                    record.save()
+                    error = False
+                except Exception:
+                    pass
+        elif opt == 9:
+            eventID = request.POST.get('eventID', '')
+            subEventID = request.POST.get('subEventID', '')
+            name = request.POST.get('name', '')
+            startDate = request.POST.get('startDate', '')
+            endDate = request.POST.get('endDate', '')
+            logo = request.POST.get('logo', '')
+            location = request.POST.get('location', '')
+            isOnline = request.POST.get('isOnline', '')
+            coreCoordinator = request.POST.get('coreCoordinator', '')
+            coordinator = request.POST.get('coordinator', '')
+            submitted = True
+
+            startDate = datetime.strptime(startDate, jsTimeFormat).astimezone(tz)
+            if endDate != '': endDate = datetime.strptime(endDate, jsTimeFormat).astimezone(tz)
+            else: endDate = None
+
+            if coreCoordinator != '': coreCoordinator = Student.objects.get(id__exact=coreCoordinator)
+            else: coreCoordinator = None
+            if coordinator != '': coordinator = Student.objects.get(id__exact=coordinator)
+            else: coordinator = None
+
+            try:
+                oldEvent = record.eventID
+                oldName = f"{record.name} ({oldEvent.name})"
+                oldSubEvent = getEvent(oldName, record.startDate, record.endDate, eventColour=SUBEVENT_COLOR)
+
+                newEvent = Event.objects.get(id__exact=eventID)
+                record.eventID = newEvent
+                record.subEventID = subEventID
+                record.name = name
+                record.startDate = startDate
+                record.endDate = endDate
+                record.logo = logo
+                record.location = location
+                record.isOnline = isOnline
+                record.coreCoordinator = coreCoordinator
+                record.coordinator = coordinator
+                record.save()
+                error = False
+                name = f"{name} ({newEvent.name})"
+                eventCreated = editEvent(oldSubEvent, name, startDate, endDate, eventColour=SUBEVENT_COLOR)
+                if (not eventCreated): error = True
+            except Exception as err:
+                print(err)
+                pass
+
+        context['submitted'] = submitted
+        context['error'] = error
+    else:
+        context['record'] = record
+        if opt == 2:
+            branches = Branch.objects.all().order_by(*options[1][2])
+            context['branches'] = branches
+        if opt in range(3, 6) or opt in range(7, 10):
+            students = Student.objects.all().order_by(*options[2][2])
+            context['students'] = students
+        if opt == 4 or opt == 8:
+            clubs = Club.objects.all().order_by(*options[3][2])
+            context['clubs'] = clubs
+        if opt in range(6, 10):
+            events = Event.objects.all().order_by(*options[5][2])
+            context['events'] = events
+
+    return render(request, 'base/adminEdit.html', context)
 
 @user_passes_test(isAdminMember, login_url='/login')
-def adminDelete(request: HttpRequest, opt: int):
+def adminDelete(request: HttpRequest, opt: int, recordID: str):
     """The Django View for Deleting Data in the Database."""
-    return render(request, 'base/adminDelete.html', {'tables': tables})
+    context = {'optionNo': opt, 'option': options[opt], 'tables': tables}
+    record: models.Model
+    try:
+        record = (context['option'][1]).objects.get(id__exact=recordID)
+    except Exception:
+        return HttpResponseNotFound(request)
+    
+    if request.method == 'POST':
+        submitted, error = False, True
+
+        if opt in [1,2,3,4,7,8]:
+            try:
+                submitted = True
+                record.delete()
+                error = False
+            except Exception as err:
+                logger.warning(err)
+                pass
+        elif opt in [5,6,9]:
+            try:
+                eStartDate = record.startDate
+                eEndDate = record.endDate
+                eRepetition = ''
+                eColour = None
+                if opt == 5:
+                    eName = record.name
+                    eRepetition = record.repetition
+                    eColour = EVENT_COLOR
+                elif opt == 6:
+                    eName = f"{record.sessionName} ({record.eventID.name})"
+                    eColour = SESSION_COLOR
+                elif opt == 9:
+                    eName = f"{record.name} ({record.eventID.name})"
+                    eColour = SUBEVENT_COLOR
+                event = getEvent(eName, eStartDate, eEndDate, eRepetition, eColour)
+                submitted = True
+                event.delete()
+                record.delete()
+                error = False
+            except Exception as err:
+                logger.warning(err)
+                pass
+        
+        context['submitted'] = submitted
+        context['error'] = error
+    else:
+        context['record'] = record
+
+    return render(request, 'base/adminDelete.html', context)
 
 @user_passes_test(isAdminMember, login_url='/login')
 def adminPreview(request: HttpRequest, opt: int):

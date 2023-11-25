@@ -25,14 +25,15 @@ def createCalendar(calendarName: str, calendarDescription: str):
         rule.save()
 
 def addEvent(eventName: str, eventStartDate: datetime, eventEndDate: datetime = None, eventRepetition: str = '', eventColour: str = ''):
-    """Adds an Event to the Event Calendar provided."""
+    """Adds an Event to the Event Calendar."""
     success = False
     repetitionRule = None
 
     if eventRepetition != '':
         try:
             repetitionRule = Rule.objects.get(frequency=eventRepetition)
-        except Exception:
+        except Exception as err:
+            logger.warning(err)
             return False
 
     if eventEndDate == None:
@@ -47,10 +48,9 @@ def addEvent(eventName: str, eventStartDate: datetime, eventEndDate: datetime = 
         'calendar': Calendar.objects.get(slug=calendarName)
     }
     try:
-        Event.objects.get(title=data['title'], start=data['start'], end=data['end'])
+        Event.objects.get(title=data['title'], start=data['start'], end=data['end'], color_event=data['color_event'], rule=data['rule'], calendar=data['calendar'])
         success = True
-    except Exception as err:
-        print(err)
+    except Exception:
         pass
     
     if not success:
@@ -59,6 +59,62 @@ def addEvent(eventName: str, eventStartDate: datetime, eventEndDate: datetime = 
             sEvent.save()
             success = True
         except Exception as err:
-            print(err)
             logger.warning(err)
+    return success
+
+def getEvent(eventName: str, eventStartDate: datetime, eventEndDate: datetime = None, eventRepetition: str = '', eventColour: str = ''):
+    """Gets an Event from the Event Calendar."""
+    repetitionRule = None
+
+    if eventRepetition != '':
+        try:
+            repetitionRule = Rule.objects.get(frequency=eventRepetition)
+        except Exception:
+            return None
+
+    if eventEndDate == None:
+        eventEndDate = eventStartDate
+
+    data = {
+        'title': eventName,
+        'start': eventStartDate,
+        'end': eventEndDate,
+        'color_event': eventColour,
+        'rule': repetitionRule,
+        'calendar': Calendar.objects.get(slug=calendarName)
+    }
+    
+    try:
+        event = Event.objects.get(**data)
+        return event
+    except Exception as err:
+        logger.warning(err)
+        return None
+    
+def editEvent(event: Event, eventName: str, eventStartDate: datetime, eventEndDate: datetime = None, eventRepetition: str = '', eventColour: str = ''):
+    """Edits an Event from the Event Calendar."""
+    success = False
+    repetitionRule = None
+
+    if eventRepetition != '':
+        try:
+            repetitionRule = Rule.objects.get(frequency=eventRepetition)
+        except Exception as err:
+            logger.warning(err)
+            return False
+
+    if eventEndDate == None:
+        eventEndDate = eventStartDate
+        
+    try:
+        event.title = eventName
+        event.start = eventStartDate
+        event.end = eventEndDate
+        event.color_event = eventColour
+        event.rule = repetitionRule
+        event.calendar = Calendar.objects.get(slug=calendarName)
+        event.save()
+        success = True
+    except Exception as err:
+        logger.warning(err)
     return success

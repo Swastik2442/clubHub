@@ -15,7 +15,7 @@
     </div>
     <div class="col-md-6">
       <label for="branchName" class="form-label">Branch Name</label>
-      <input type="text" class="form-control" id="branchName" name="name" pattern="[A-Za-z0-9 \-\(\)]+" maxlength="30" required>
+      <input type="text" class="form-control" id="branchName" name="name" pattern="[A-Za-z0-9 \/\,\.\-\(\)]+" maxlength="30" required>
       <div class="invalid-feedback">Please enter a valid Name.</div>
     </div>
 {% elif optionNo is 2 %}
@@ -57,7 +57,7 @@
     </div>
     <div class="col-md-6">
         <label for="clubName" class="form-label">Club Name</label>
-        <input type="text" class="form-control" id="clubName" name="club_name" pattern="[A-Za-z0-9 \-\(\)]+" maxlength="50" required>
+        <input type="text" class="form-control" id="clubName" name="club_name" pattern="[A-Za-z0-9 \/\,\.\-\(\)]+" maxlength="50" required>
         <div class="invalid-feedback">Please enter a valid Name.</div>
     </div>
     <div class="col-md-6">
@@ -144,17 +144,16 @@
     </div>
     <div class="col-md-6">
         <label for="eventName" class="form-label">Name</label>
-        <input type="text" class="form-control" id="eventName" name="name" pattern="[A-Za-z0-9 ]+" maxlength="30" required>
+        <input type="text" class="form-control" id="eventName" name="name" pattern="[A-Za-z0-9 \/\,\.\-\(\)]+" maxlength="30" required>
         <div class="invalid-feedback">Please enter a valid Name.</div>
     </div>
     <div class="col-md-3">
         <label for="eventRepetition" class="form-label">Event Repeats</label>
         <select class="form-select" id="eventRepetition" name="repetition">
             <option value="" selected>Select the Repetition</option>
-            <option value="YEARLY">Yearly</option>
-            <option value="MONTHLY">Monthly</option>
-            <option value="WEEKLY">Weekly</option>
-            <option value="DAILY">Daily</option>
+            {% for k, v in repetitionOptions.items %}
+            <option value="{{ v }}">{{ k }}</option>
+            {% endfor %}
         </select>
         <div class="invalid-feedback">Please select a valid Repetition Mode.</div>
     </div>
@@ -215,7 +214,7 @@
     </div>
     <div class="col-md-6">
         <label for="sessionName" class="form-label">Session Name</label>
-        <input type="text" class="form-control" id="sessionName" name="sessionName" pattern="[A-Za-z0-9 ]+" maxlength="20">
+        <input type="text" class="form-control" id="sessionName" name="sessionName" pattern="[A-Za-z0-9 \/\,\.\-\(\)]+" maxlength="20">
         <div class="invalid-feedback">Please enter a valid Name.</div>
     </div>
     <div class="col-md-6">
@@ -308,7 +307,7 @@
     </div>
     <div class="col-md-6">
         <label for="subEventName" class="form-label">Name</label>
-        <input type="text" class="form-control" id="subEventName" name="name" pattern="[A-Za-z0-9 ]+" maxlength="30" required>
+        <input type="text" class="form-control" id="subEventName" name="name" pattern="[A-Za-z0-9 \/\,\.\-\(\)]+" maxlength="30" required>
         <div class="invalid-feedback">Please enter a valid Name.</div>
     </div>
     <div class="col-md-6">
@@ -334,7 +333,7 @@
             <option value="{{ i.id }}">{{ i }}</option>
             {% endfor %}
         </select>
-        <div class="invalid-feedback">Please select a valid Student.</div>
+        <div class="invalid-feedback">Please select a valid Student. If there is no Core Coordinator, select the Organizing Head.</div>
     </div>
     <div class="col-md-6">
         <label for="coordinator" class="form-label">Coordinator</label>
@@ -344,7 +343,7 @@
             <option value="{{ i.id }}">{{ i }}</option>
             {% endfor %}
         </select>
-        <div class="invalid-feedback">Please select a valid Student.</div>
+        <div class="invalid-feedback">Please select a valid Student. If there is no Coordinator, select the Organizing Head.</div>
     </div>
     <div class="col-md-8">
         <label for="subEventLocation" class="form-label">Location</label>
@@ -363,9 +362,15 @@
 {% endif %}
     {% if submitted %}
     {% if error %}
-    <p>An error occured while processing your request.</p>
+    <p>
+        <svg class="bi"><use xlink:href="#bug"></use></svg>
+        An error occured while processing your request.
+    </p>
     {% else %}
-    <p>Data added Successfully.</p>
+    <p>
+        <svg class="bi"><use xlink:href="#check-mark"></use></svg>
+        Data added Successfully.
+    </p>
     {% endif %}
     <button type="submit" class="btn btn-primary" disabled>Add</button>
     {% else %}
