@@ -46,11 +46,12 @@ create table clubMember(
     member_role         varchar(20) not null,
     constraint cmc_fk(club_id, club_year) references club(club_id, club_name),
     constraint cmm_fk(member_roll_no, member_branch_id, member_batch) references student(roll_no, branch_id, member_batch),
-    constraint cm_pk(club_id, club_year, member_roll_no, member_branch_id, member_batch, member_role)
+    constraint cm_pk(club_id, club_year, member_roll_no, member_branch_id, member_batch)
 );
 
 create table uevent(
     event_id                    varchar(10) not null,
+    event_name                  varchar(30) not null,
     event_start_date            date not null,
     event_end_date              date,
     event_logo_url              varchar(200),
@@ -59,9 +60,8 @@ create table uevent(
     organizing_head_roll_no     varchar(11),
     organizing_head_branch_id   varchar(4),
     organizing_head_batch       int,
-    organizing_head_picture_url varchar(200),
     repetition                  varchar(10),
-    constraint e_pk primary key(e_id),
+    constraint e_pk primary key(event_id),
     constraint oh_fk foreign key(organizing_head_roll_no, organizing_head_branch_id, organizing_head_batch) references student(roll_no, branch_id, batch)
 );
 exec sp_columns uevent;
@@ -95,8 +95,11 @@ create table eOperationsTeam(
     coreCoordinator_roll_no     varchar(11),
     coreCoordinator_branch_id   varchar(4),
     coreCoordinator_batch       int,
+    relatedClub_id              varchar(10),
+    relatedClub_year            int,
     constraint ote_fk foreign key(event_id) references uevent,
-    constraint otc_fk foreign key(coreCoordinator_roll_no, coreCoordinator_branch_id, coreCoordinator_batch) references student(roll_no, branch_id, batch),
+    constraint otcc_fk foreign key(coreCoordinator_roll_no, coreCoordinator_branch_id, coreCoordinator_batch) references student(roll_no, branch_id, batch),
+    constraint otc_fk foreign key(relatedClub_id, relatedClub_year) references club(club_id, club_year),
     constraint ot_pk primary key(event_id, team_id)
 );
 exec sp_columns eOperationsTeam;

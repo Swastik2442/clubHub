@@ -1,13 +1,6 @@
 # University's Club Hub & Event Calendar
 ### Problem Statement
-A University has multiple clubs that serve various subjects of interest. Each club has its President, Vice-president, Faculty Mentor, Coordinators, Volunteers and Members.
-
-The clubs organise multiple events of various categories like Cultural, Technical, Sports etc., either singularly or in collaboration with other clubs.
-Each event has its core team and its operations team. The core team consists of Student Members and Mentor Members.
-
-The Operations Team consists of various sub-teams based on the event type. Each sub-team consists of one Core Coordinator, multiple Coordinators, and multiple Volunteers.
-
-Each event has Sub-Events which are handled by a Core Coordinator and a Coordinator.
+A University has multiple clubs that serve various subjects of interest. Each club has its President, Vice-president, Faculty Mentor, Coordinators, Volunteers and Members. The clubs organise multiple events of various categories like Cultural, Technical, Sports etc., either singularly or in collaboration with other clubs. Each event has its core team and its operations team. The core team consists of Student Members and Mentor Members. The Operations Team consists of various sub-teams based on the event type. Each sub-team consists of one Core Coordinator, multiple Coordinators, and multiple Volunteers. Each event has Sub-Events which are handled by a Core Coordinator and a Coordinator.
 
 Create a Database Management System that serves as an Event Calendar and a Member Info System for the University.
 
@@ -29,6 +22,7 @@ Create a Database Management System that serves as an Event Calendar and a Membe
 ### Uses
 * SQL Server/SQLite
 * Django
+* Django-Scheduler
 * FullCalendar
 * Bootstrap 5
 * JQuery

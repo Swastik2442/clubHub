@@ -1,12 +1,10 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpRequest, HttpResponseNotFound
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 
 from schedule.utils import check_calendar_permissions
 from schedule.views import _api_occurrences
-from schedule.models import Event as schedulerEvent, Calendar, Rule
 
 from dotenv import load_dotenv
 
